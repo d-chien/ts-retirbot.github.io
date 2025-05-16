@@ -199,7 +199,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         message.target = '_blank'; // 在新分頁打開
 
         const canvas = document.createElement('canvas');
-        QRCode.toCanvas(canvas, urllink, {width:128});
+        new QRCode.toCanvas(canvas, urllink, {width:128});
         console.log('link and QRCODE showed.')
     }
     function appendMessage(sender,text){
