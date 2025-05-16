@@ -170,7 +170,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                 appendLoading();
                 try {
                     generatePDF(data);
-                } catch {
+                } catch (error) {
                     removeLoading();
                 }
                 appendMessage('bot', "本次諮詢已結束，如要重新開始對話重整頁面。");
@@ -198,7 +198,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         message.target = '_blank'; // 在新分頁打開
 
         const canvas = document.createElement('canvas');
-        await QRCODE.toCanvas(canvas, urllink, {width:128});
+        await qrcode.toCanvas(canvas, urllink, {width:128});
         console.log('link and QRCODE showed.')
     }
     function appendMessage(sender,text){
@@ -295,7 +295,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         } else {
           console.error('fail to retrieve PDF link',pdfdata);
         }
-      } catch {
+      } catch (error) {
         console.error('generate PDF failed: ', error);
       }
     }
