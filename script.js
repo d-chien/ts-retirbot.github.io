@@ -191,7 +191,7 @@ document.addEventListener('DOMContentLoaded', async () => {
             appendMessage('bot','很抱歉，大宇宙意識斷線中，請重整頁面以重新連接。')
         });
     }
-    async function appendPDFMessage(urllink) {
+    function appendPDFMessage(urllink) {
         const message = document.createElement('a');
         message.className = `ProposalLink`;
         message.href = urllink;
@@ -199,7 +199,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         message.target = '_blank'; // 在新分頁打開
 
         const canvas = document.createElement('canvas');
-        await qrcode.toCanvas(canvas, urllink, {width:128});
+        qrcode.toCanvas(canvas, urllink, {width:128});
         console.log('link and QRCODE showed.')
     }
     function appendMessage(sender,text){
