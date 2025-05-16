@@ -167,6 +167,12 @@ document.addEventListener('DOMContentLoaded', async () => {
                 TTS_TW.synthesizeSpeech(textFromAnotherBot);
             }
             if(data.ending ===1) {
+                appendLoading();
+                try {
+                    generatePDF(data);
+                } catch {
+                    removeLoading();
+                }
                 appendMessage('bot', "本次諮詢已結束，如要重新開始對話重整頁面。");
                 
                 const inputArea = document.querySelector(".input-area");
@@ -183,6 +189,17 @@ document.addEventListener('DOMContentLoaded', async () => {
             console.error('Error',error);
             appendMessage('bot','很抱歉，大宇宙意識斷線中，請重整頁面以重新連接。')
         });
+    }
+    async function appendPDFMessage(urllink) {
+        const message = document.createElement('a');
+        message.className = `ProposalLink`;
+        message.href = urllink;
+        message.textContent = '點此下載/查看您的PDF檔案(請於15分鐘內下載)';
+        message.target = '_blank'; // 在新分頁打開
+
+        const canvas = document.createElement('canvas');
+        await QRCODE.toCanvas(canvas, urllink, {width:128});
+        console.log('link and QRCODE showed.')
     }
     function appendMessage(sender,text){
         const message=document.createElement('div');
@@ -255,6 +272,32 @@ document.addEventListener('DOMContentLoaded', async () => {
             chat.removeChild(loadingMessage);
             loadingMessage=null;
         }
+    }
+
+    async function generatePDF(data) {
+      try {
+        const response= await fetch('https://retibot-247393254326.us-central1.run.app/genpdf',{
+          method:'POST',
+          headers:{'Content-Type':'application/json'},
+          body:JSON.stringify({session_id:data.session_id, proposal:data.response}),
+        });
+
+        if (!response.ok) {
+          throw new Error(`HTTP error! Status: ${response.status}`);
+        }
+
+        const pdfdata=await response.json();
+        const pdfUrl=pdfdata.url;
+
+        if (pdfUrl){
+          console.log('link Retrieved: ', pdfUrl);
+          appendPDFMessage(pdfUrl);
+        } else {
+          console.error('fail to retrieve PDF link',pdfdata);
+        }
+      } catch {
+        console.error('generate PDF failed: ', error);
+      }
     }
 
   
