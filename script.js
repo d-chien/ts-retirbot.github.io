@@ -170,11 +170,9 @@ document.addEventListener('DOMContentLoaded', async () => {
             }
             if(data.ending ===1) {
                 appendLoading();
-                try {
-                    generatePDF(data);
-                } catch (error) {
-                    removeLoading();
-                }
+                generatePDF(data);
+                removeLoading();
+                
                 appendMessage('bot', "本次諮詢已結束，如要重新開始對話重整頁面。");
                 
                 const inputArea = document.querySelector(".input-area");
@@ -193,11 +191,20 @@ document.addEventListener('DOMContentLoaded', async () => {
         });
     }
     async function appendPDFMessage(urllink) {
+        const bubble =document.createElement('div');
+        bubble.className=' bubble';
+      
         const message = document.createElement('a');
         message.className = `ProposalLink`;
         message.href = urllink;
         message.textContent = '點此下載/查看您的PDF檔案(請於15分鐘內下載)';
         message.target = '_blank'; // 在新分頁打開
+        
+        //bubble.innerHTML =  marked.parse(text);
+        bubble.appendChild(message);
+        chat.appendChild(bubble);
+        chat.scrollTop = chat.scrollHeight;
+        
 
         const canvas = document.createElement('canvas');
         await QRCode.toCanvas(canvas, urllink, {width:128});
