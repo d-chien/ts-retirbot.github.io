@@ -1,5 +1,5 @@
 console.log("script.js version: 2.0.1");
-import QRCode from 'qrcode'
+
 let isSttReady = false;
 let isRecording = false;
 
