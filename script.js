@@ -1,4 +1,4 @@
-console.log("script.js version: 2.0.4");
+console.log("script.js version: 2.0.5");
 
 let isSttReady = false;
 let isRecording = false;
@@ -229,7 +229,14 @@ document.addEventListener('DOMContentLoaded', async () => {
         const bubble2 = document.createElement('div');
         bubble2.className = 'bubble';
         const canvas = document.createElement('canvas');
-        await QRCode.toCanvas(canvas, urllink, {width:128});
+        await QRCode.toCanvas(canvas, urllink, {
+          width: 150,
+          color:{
+            dark: '#000000',
+            light: '#e53935',
+          },
+          correctLevel: QRCode.CorrectLevel.M,
+        });
         bubble2.appendChild(canvas);
         message2.appendChild(bubble2);
         chat.appendChild(message2);
