@@ -198,9 +198,14 @@ document.addEventListener('DOMContentLoaded', async () => {
         });
     }
     async function appendPDFMessage(urllink) {
+        // 建立一個div包裝內容
         const bubble =document.createElement('div');
-        bubble.className=' bubble';
-      
+        bubble.className='message bot';
+        // 加上頭像
+        const avatar = document.createElement('div');
+        avatar.className = ' avatar';
+        bubble.appendChild(avatar);
+        // 加上文字內容
         const message = document.createElement('a');
         message.className = `ProposalLink`;
         message.href = urllink;
@@ -217,6 +222,8 @@ document.addEventListener('DOMContentLoaded', async () => {
         await QRCode.toCanvas(canvas, urllink, {width:128});
         console.log('link and QRCODE showed.')
     }
+
+
     function appendMessage(sender,text){
         const message=document.createElement('div');
         
