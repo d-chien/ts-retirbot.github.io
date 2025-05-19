@@ -1,4 +1,4 @@
-console.log("script.js version: 2.0.2");
+console.log("script.js version: 2.0.3");
 
 let isSttReady = false;
 let isRecording = false;
@@ -199,27 +199,42 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
     async function appendPDFMessage(urllink) {
         // 建立一個div包裝內容
-        const bubble =document.createElement('div');
-        bubble.className='message bot';
+        const message =document.createElement('div');
+        message.className='message bot';
         // 加上頭像
         const avatar = document.createElement('div');
         avatar.className = ' avatar';
-        bubble.appendChild(avatar);
+        message.appendChild(avatar);
         // 加上文字內容
-        const message = document.createElement('a');
-        message.className = `ProposalLink`;
-        message.href = urllink;
-        message.textContent = '點此下載/查看您的PDF檔案(請於15分鐘內下載)';
-        message.target = '_blank'; // 在新分頁打開
-        
-        //bubble.innerHTML =  marked.parse(text);
+        const content = document.createElement('a');
+        content.className = `ProposalLink`;
+        content.href = urllink;
+        content.textContent = '點此下載/查看您的PDF檔案(請於15分鐘內下載)';
+        content.target = '_blank'; // 在新分頁打開
+        const bubble = document.createElement('div');
+        bubble.className = ' bubble';
         bubble.appendChild(message);
-        chat.appendChild(bubble);
+        message.appendChild(bubble);
+
+
+        chat.appendChild(message);
         chat.scrollTop = chat.scrollHeight;
         
-
+        // append canvas
+        const message2 = document.createElement('div');
+        message2.className = 'message bot';
+        const avatar2 = document.createElement('div');
+        avatar2.className = ' avatar';
+        message2.appendChild(avatar2);
+        const bubble2 = document.createElement('div');
+        bubble2.className = 'bubble';
         const canvas = document.createElement('canvas');
         await QRCode.toCanvas(canvas, urllink, {width:128});
+        bubble2.appendChild(canvas);
+        message2.appendChild(bubble2);
+        chat.appendChild(message2);
+        chat.scrollTop = chat.scrollHeight;
+        
         console.log('link and QRCODE showed.')
     }
 
