@@ -1,4 +1,4 @@
-console.log("script.js version: 2.0.5");
+console.log("script.js version: 2.0.6");
 
 let isSttReady = false;
 let isRecording = false;
@@ -235,7 +235,7 @@ document.addEventListener('DOMContentLoaded', async () => {
             dark: '#000000',
             light: '#e53935',
           },
-          correctLevel: QRCode.CorrectLevel.M,
+          correctLevel: 'M',
         });
         bubble2.appendChild(canvas);
         message2.appendChild(bubble2);
