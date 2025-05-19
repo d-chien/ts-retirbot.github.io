@@ -1,4 +1,4 @@
-console.log("script.js version: 2.0.3");
+console.log("script.js version: 2.0.4");
 
 let isSttReady = false;
 let isRecording = false;
@@ -213,7 +213,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         content.target = '_blank'; // 在新分頁打開
         const bubble = document.createElement('div');
         bubble.className = ' bubble';
-        bubble.appendChild(message);
+        bubble.appendChild(content);
         message.appendChild(bubble);
 
 
