@@ -170,10 +170,25 @@ document.addEventListener('DOMContentLoaded', async () => {
             }
             if(data.ending ===1) {
                 appendLoading();
-                await generatePDF(data);
-                removeLoading();
+                // generatePDF(data);
+                fetch('https://retibot-247393254326.us-central1.run.app/genpdf',{
+                  method:'POST',
+                  headers:{'Content-Type':'application/json'},
+                  body:JSON.stringify({session_id:data.session_id, proposal:data.response}),
+                })
+                .then(res => res.json())
+                .then(data => {
+                    removeLoading();
+                    appendPDFMessage(data.url);
+                    appendMessage('bot', "本次諮詢已結束，如要重新開始對話重整頁面。");
+                })
+                .catch(error=>{
+                    removeLoading();
+                    console.error('Error',error);
+                    appendMessage('bot','很抱歉，大宇宙意識斷線中，請重整頁面以重新連接。')
+                });
                 
-                appendMessage('bot', "本次諮詢已結束，如要重新開始對話重整頁面。");
+                
                 
                 const inputArea = document.querySelector(".input-area");
                 inputArea.style.display = "none";
