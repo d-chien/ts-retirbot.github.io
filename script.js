@@ -1,4 +1,4 @@
-console.log("script.js version: 2.0.1");
+console.log("script.js version: 2.0.2");
 
 let isSttReady = false;
 let isRecording = false;
