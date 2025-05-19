@@ -236,7 +236,7 @@ document.addEventListener('DOMContentLoaded', async () => {
             dark: '#ffffff',
             light: '#e53935',
           },
-          correctLevel: 'L',
+          correctLevel: 'H',
         });
         bubble2.appendChild(canvas);
         message2.appendChild(bubble2);
