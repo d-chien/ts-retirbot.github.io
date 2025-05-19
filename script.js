@@ -1,4 +1,4 @@
-console.log("script.js version: 2.0.7");
+console.log("script.js version: 2.0.8");
 
 let isSttReady = false;
 let isRecording = false;
@@ -168,15 +168,16 @@ document.addEventListener('DOMContentLoaded', async () => {
             if (document.getElementById('voice-toggle').checked) {
                 TTS_TW.synthesizeSpeech(textFromAnotherBot);
             }
-            if(data.ending ===1) {
+            if(data.ending !==0) {
                 appendLoading();
                 // generatePDF(data);
-                try {
-                    await generatePDF(data); // AWAIT the PDF generation
-                } catch (error) {
-                    console.error("Error generating PDF:", error);
-                    appendMessage('bot', "PDF 報告生成失敗。");
-                }
+                if (data.ending === 1) {
+                  try {
+                      await generatePDF(data); // AWAIT the PDF generation
+                  } catch (error) {
+                      console.error("Error generating PDF:", error);
+                      appendMessage('bot', "PDF 報告生成失敗。");
+                }};
                 
                 removeLoading();
                 appendMessage('bot', "本次諮詢已結束，如要重新開始對話重整頁面。");
