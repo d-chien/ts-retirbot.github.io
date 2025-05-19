@@ -170,7 +170,7 @@ document.addEventListener('DOMContentLoaded', async () => {
             }
             if(data.ending ===1) {
                 appendLoading();
-                generatePDF(data);
+                await generatePDF(data);
                 removeLoading();
                 
                 appendMessage('bot', "本次諮詢已結束，如要重新開始對話重整頁面。");
