@@ -6,15 +6,15 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name = "author" content="Angela Ko">
     <title>安心退</title>
-    <!--<link rel="icon" href="圖標連結" type="image/x-icon">-->
+    <link rel="icon" href="https://www.taishinlife.com.tw/favicon.ico" type="image/x-icon">
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
     <header class="banner top-banner">
-        <!--<img src="TSLI_RED.png" alt="橫幅（頂）">-->
+        <img src="TSLI_RED.png" alt="橫幅（頂）">
         <div class="settings" onclick="toggleMenu()">⚙️</div>
         <div id="menu" class="menu">
-            <a href="" target="_blank">聯絡我們</a>
+            <a href="https://www.taishinlife.com.tw/portal/contactus" target="_blank">聯絡我們</a>
 
             <div class="voice-settings">
                 <br>
@@ -48,6 +48,18 @@
     </main>
 
     <footer class="banner bottom-banner"></footer>
+    <!--Cookie提示-->
+    <div class="cookie-banner" id="cookie-banner" >
+        <div class="cookie-content">
+            <img src="cookie.png" alt="cookie icon" class="cookie-icon">
+            <div class="cookie-text">
+                本服務中所搜集之個人資訊僅作對話後之分析報告使用，不會挪作他用，當您點選同意即代表同意本公司搜集相關資訊。詳請參閱
+                <a href="https://www.taishinlife.com.tw/portal/privacy-policy" target="_blank" rel="noopener noreferrer">本公司隱私權政策</a>
+                說明，了解更多詳情。
+            </div>
+            <button class="cookie-btn" onclick="hideBanner()">確定</button>
+        </div>
+    </div>
 
     <script src="https://cdn.jsdelivr.net/npm/marked@4.3.0/lib/marked.umd.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.1/build/qrcode.min.js" ></script>

@@ -254,3 +254,58 @@ html,body{
     border-top: 1px solid#ccc;
     background: #fff;
 }
+
+.cookie-banner {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    position: fixed;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 80%;
+    background-color: #f9f9f9;
+    border: 1px solid #ccc;
+    padding: 15px 20px;
+    border-radius: 20px;
+    z-index: 999;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+}
+
+.cookie-icon {
+    width: 40px;
+    height: 40px;
+    margin-right: 15px;
+}
+
+.cookie-text {
+    flex: 1;
+    min-width: 200px;
+    font-size: 14px;
+    color: #333;
+}
+
+.cookie-text a {
+    color: #007bff;
+    text-decoration: underline;
+}
+
+.cookie-btn {
+    background-color: #e60012;
+    color: #fff;
+    border: none;
+    padding: 10px 20px;
+    font-size: 14px;
+    border-radius: 5px;
+    cursor: pointer;
+    margin-left: 15px;
+
+}
+
+.cookie-content {
+    display: flex;
+    flex-wrap: nowrap;
+    align-items: center;
+    width: 100%;
+}

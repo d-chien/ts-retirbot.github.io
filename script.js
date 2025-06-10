@@ -567,3 +567,13 @@ document.addEventListener('DOMContentLoaded', async () => {
       Recorder.setIsRecord = recordFileCheckbox.checked;
     }
   }
+
+  // 這個函式會在點擊「確定」按鈕時執行
+  function hideBanner() {
+    // 透過 ID 取得整個 cookie-banner 元素
+    const cookieBanner = document.getElementById('cookie-banner');
+    // 將 cookie-banner 的顯示屬性設定為 'none'，使其隱藏
+    if (cookieBanner) {
+        cookieBanner.style.display = 'none';
+    }
+  }
