@@ -19,7 +19,7 @@ document.addEventListener('DOMContentLoaded',()=>{
 
             isSttReady = true;
             recordButton.disabled = false;
-            recordButton.textContent = "🎤 開始錄音";
+            recordButton.textContent = "🎤 語音輸入";
             console.log("錄音已準備就緒！");
 
         } catch (error) {
