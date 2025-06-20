@@ -1,4 +1,4 @@
-console.log("script.js version: 2.0.8");
+console.log("script.js version: 2.1.0");
 
 let isSttReady = false;
 let isRecording = false;
@@ -43,13 +43,13 @@ document.addEventListener('DOMContentLoaded',()=>{
                 console.log("嘗試開始錄音...");
                 await handleStart();
                 isRecording = true;
-                recordButton.textContent = "⏹️ 停止錄音";
+                recordButton.textContent = "⏹️ 停止輸入";
                 console.log("錄音已開始。");
     
             } catch (error) {
                 console.error("開始錄音失敗:", error);
                 isRecording = false; // 確保狀態正確
-                recordButton.textContent = "🎤 開始錄音";
+                recordButton.textContent = "🎤 語音輸入";
             }
         } else {
             // --- 停止錄音 ---
@@ -57,14 +57,14 @@ document.addEventListener('DOMContentLoaded',()=>{
                 console.log("嘗試停止錄音...");
                 await handleStop();
                 isRecording = false;
-                recordButton.textContent = "🎤 開始錄音";
+                recordButton.textContent = "🎤 語音輸入";
                 console.log("錄音已停止。");
                 
     
             } catch (error) {
                 console.error("停止錄音失敗:", error);
                  isRecording = false;
-                 recordButton.textContent = "🎤 開始錄音";
+                 recordButton.textContent = "🎤 語音輸入";
             }
         }
     });
@@ -102,6 +102,8 @@ async function initSession() {
 }
 
 let sessionId_A = null;
+
+
 document.addEventListener('DOMContentLoaded', async () => {
     const sessionId = await initSession();
     if (sessionId) {
@@ -111,6 +113,33 @@ document.addEventListener('DOMContentLoaded', async () => {
         console.error("Session 初始化失敗");
     }
 });
+
+    /**
+     * 判斷是否為桌面裝置
+     * 這裡使用較為簡單的判斷方式，更精確的判斷可能需要更複雜的邏輯。
+     * @returns {boolean} 如果是桌面裝置則返回 true，否則返回 false。
+     */
+    function isDesktopDevice() {
+      // 簡單判斷：檢查使用者代理字串中是否包含常見的行動裝置關鍵字
+      const userAgent = navigator.userAgent.toLowerCase();
+      const isMobile = /android|iphone|ipad|ipod|windows phone|iemobile|opera mini/i.test(userAgent);
+
+      // 也可以結合螢幕寬度進行判斷，例如：寬度大於某個閾值
+      // return !isMobile && window.innerWidth > 768; // 例如，桌面裝置寬度通常大於 768px
+      return !isMobile; // 僅根據 userAgent 判斷
+    }
+
+    const textInput = document.getElementById('textInput');
+
+    // keyboard watching
+    textInput.addEventListener('keypress', (event) => {
+        if (event.key === 'Enter' && isDesktopDevice()) {
+            // 避免預設換行行為
+            event.preventDefault();
+            // 發送訊息
+            sendMessage();
+        }
+    });
 
 
 
