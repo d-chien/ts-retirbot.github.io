@@ -1,4 +1,5 @@
 console.log("script.js version: 2.1.0");
+import DOMPurify from 'dompurify';
 
 let isSttReady = false;
 let isRecording = false;
@@ -13,7 +14,6 @@ document.addEventListener('DOMContentLoaded',()=>{
         try {
             console.log("語音功能開始初始化...");
             await navigator.mediaDevices.getUserMedia({audio:true});
-            //Recorder = new ASRRecorder("ASR0421_70789634","Api042170789634","https://asrapi01.bronci.com.tw",false)
             await handleInit();
             console.log("初始化完成。");
 
@@ -303,7 +303,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         
             const bubble = document.createElement('div');
             bubble.className = ' bubble';
-            bubble.innerHTML = marked.parse(text); 
+            bubble.innerHTML = DOMPurify.sanitize(marked.parse(text)); 
             //bubble.textContent = text;
             message.appendChild(bubble);
         
@@ -388,8 +388,10 @@ document.addEventListener('DOMContentLoaded', async () => {
   /**
    * 抓取 DOM
    */
-  const username = "ASR0421_70789634";
-  const password = "Api042170789634";
+  require('dotenv').config();
+  const username = process.env.ACCOUNT;
+  const password = process.env.PASSWORD;
+  console.log('Account aquired')
   const url = "https://asrapi01.bronci.com.tw";
   const recordFileCheckbox = false;
   const parserUrl = "";
@@ -427,11 +429,8 @@ document.addEventListener('DOMContentLoaded', async () => {
    */
   async function handleInit() {
 
-    if (!username && !password && !url) {
-      console.log("username",username);
-      console.log("password",password);
-      console.log("url",url);
-      return;
+    if (ProcessingInstruction.env.NODE_ENV === 'development') {
+      console.log('Debug info')
     }
 
     /**

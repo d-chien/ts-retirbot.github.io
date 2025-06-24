@@ -1,6 +1,10 @@
 // 版本資訊
 const ASR_VERSION = "1.0.5";
 console.log(`ASRRecorder.js version ${ASR_VERSION}`);
+const username = process.env.ACCOUNT;
+const password = process.env.PASSWORD;
+console.log('Account aquired')
+
 
 class ASRRecorder {
   FILE_SEND_PERIOD = 200;
@@ -14,14 +18,15 @@ class ASRRecorder {
    * @param {string} url
    * @param {boolean} isRecord
    */
-  constructor(username, password, url, isRecord) {
-    if (!username) {
-      throw new Error("Please enter username");
-    }
+  // constructor(username, password, url, isRecord) {
+  constructor(url, isRecord) {
+    // if (!username) {
+    //   throw new Error("Please enter username");
+    // }
 
-    if (!password) {
-      throw new Error("Please enter password");
-    }
+    // if (!password) {
+    //   throw new Error("Please enter password");
+    // }
 
     if (!url) {
       throw new Error("Please enter API url");

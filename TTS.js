@@ -1,8 +1,12 @@
+const username = process.env.ACCOUNT;
+const password = process.env.PASSWORD;
+console.log('Account aquired')
+
 class TTS {
         async synthesizeSpeech(text) {
             const credentials = {
-                username: 'TTS0421_70789634',
-                password: 'Api042170789634',
+                username: username,
+                password: password,
                 rememberMe: 1
             };
             const serverUrl = 'https://ttsapi03.bronci.com.tw/';
@@ -72,10 +76,12 @@ class TTS {
     }
 
     convertS16LEToFloat32(audioData) {
+        const MAX_LENGTH = 50000;
         const int16Array = new Int16Array(audioData);
         const float32Array = new Float32Array(int16Array.length);
+        const length = Math.min(int16Array.length,MAX_LENGTH);
 
-        for (let i = 0; i < int16Array.length; i++) {
+        for (let i = 0; i < length; i++) {
             float32Array[i] = int16Array[i] / 32768;
         }
 
