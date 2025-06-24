@@ -8,6 +8,18 @@ import Parser from './Parser.js'; //
 // 假設 TTS.js 也是一個模組並導出 TTS 類
 import TTS from './TTS.js'; 
 
+const res = await fetch(`https://retibot-247393254326.us-central1.run.app/get_cred`, {
+  method: "GET",
+  headers: {
+    "content-type": "application/json",
+  }
+}).catch((error) => {
+  throw new Error(`Unable to login: ${error}`);
+});
+const json = await res.json();
+const username = json.username;
+const password = json.password;
+
 let isSttReady = false;
 let isRecording = false;
 
@@ -112,8 +124,8 @@ document.addEventListener('DOMContentLoaded', async () => {
 // ASRRecorder 相關變數和函式
 // 移除 require('dotenv').config(); 因為前端環境不支援
 // 直接在這裡定義帳號和密碼
-const username_ASR = "您的ASR帳號"; // <--- 請替換為您的 ASR 帳號
-const password_ASR = "您的ASR密碼"; // <--- 請替換為您的 ASR 密碼
+const username_ASR = username; // <--- 請替換為您的 ASR 帳號
+const password_ASR = password; // <--- 請替換為您的 ASR 密碼
 console.log('Account aquired');
 const url = "https://asrapi01.bronci.com.tw";
 const recordFileCheckbox = false;
