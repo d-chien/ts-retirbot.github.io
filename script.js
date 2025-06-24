@@ -2,20 +2,28 @@
 console.log("script.js version: 2.1.0");
 
 
-const res = fetch(`https://retibot-247393254326.us-central1.run.app/get_cred`, {
-  method: "GET",
-  headers: {
-    "content-type": "application/json",
-  }
-}).catch((error) => {
-  throw new Error(`Unable to login: ${error}`);
-});
-const json = res.json();
-const username = json.ACCOUNT;
-const password = json.PASSWORD;
+// const res = fetch(`https://retibot-247393254326.us-central1.run.app/get_cred`, {
+//   method: "GET",
+//   headers: {
+//     "content-type": "application/json",
+//   }
+// }).catch((error) => {
+//   throw new Error(`Unable to login: ${error}`);
+// });
+// const json = res.json();
+// const username = json.ACCOUNT;
+// const password = json.PASSWORD;
 
 let isSttReady = false;
 let isRecording = false;
+
+// 定義 ASR 相關的變數，但暫不賦值
+let username_ASR = "";
+let password_ASR = "";
+const url_ASR = "https://asrapi01.bronci.com.tw";
+const recordFileCheckbox = false;
+const parserUrl = "";
+const devices = "default";
 
 // 將所有 DOM 相關的初始化和事件綁定放在這一個 DOMContentLoaded 監聽器中
 document.addEventListener('DOMContentLoaded', async () => {
@@ -27,6 +35,28 @@ document.addEventListener('DOMContentLoaded', async () => {
     const sendButton = document.getElementById('send-button'); // 新增：發送按鈕
     const hideBannerButton = document.getElementById('hide-banner-button'); // 新增：隱藏橫幅按鈕
     const textInput = document.getElementById('textInput'); // 獲取文字輸入框
+
+    // **在這裡安全地獲取憑證**
+    try {
+      console.log("嘗試獲取 ASR 憑證...");
+      const response = await fetch(`https://retibot-247393254326.us-central1.run.app/get_cred`, {
+          method: "GET",
+          headers: {
+              "content-type": "application/json",
+          }
+      });
+      const json = await response.json(); // 確保 await
+      username_ASR = json.ACCOUNT;
+      password_ASR = json.PASSWORD;
+      console.log('ASR 憑證獲取成功。');
+      console.log('Account aquired'); // 放在獲取成功後
+
+    } catch (error) {
+        console.error(`無法獲取 ASR 憑證: ${error}`);
+        // 顯示錯誤訊息給使用者或禁用功能
+        recordButton.textContent = "憑證錯誤";
+        return; // 無法獲取憑證則停止初始化
+    }
 
     // 禁用按鈕直到登入成功
     recordButton.disabled = true;
@@ -115,16 +145,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     });
 });
 
-// ASRRecorder 相關變數和函式
-// 移除 require('dotenv').config(); 因為前端環境不支援
-// 直接在這裡定義帳號和密碼
-const username_ASR = username; // <--- 請替換為您的 ASR 帳號
-const password_ASR = password; // <--- 請替換為您的 ASR 密碼
-console.log('Account aquired');
-const url = "https://asrapi01.bronci.com.tw";
-const recordFileCheckbox = false;
-const parserUrl = "";
-const devices = "default";
+
 
 let Recorder = null;
 let autoScroll = true;

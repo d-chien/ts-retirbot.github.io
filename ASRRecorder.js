@@ -1,17 +1,17 @@
 // 版本資訊
 const ASR_VERSION = "1.0.5";
-console.log(`ASRRecorder.js version ${ASR_VERSION}`);
-const res = fetch(`https://retibot-247393254326.us-central1.run.app/get_cred`, {
-  method: "GET",
-  headers: {
-    "content-type": "application/json",
-  }
-}).catch((error) => {
-  throw new Error(`Unable to login: ${error}`);
-});
-const json = res.json();
-const username = json.ACCOUNT;
-const password = json.PASSWORD;
+// console.log(`ASRRecorder.js version ${ASR_VERSION}`);
+// const res = fetch(`https://retibot-247393254326.us-central1.run.app/get_cred`, {
+//   method: "GET",
+//   headers: {
+//     "content-type": "application/json",
+//   }
+// }).catch((error) => {
+//   throw new Error(`Unable to login: ${error}`);
+// });
+// const json = res.json();
+// const username = json.ACCOUNT;
+// const password = json.PASSWORD;
 
 
 
@@ -48,8 +48,8 @@ class ASRRecorder {
 
     this.device = "default";
 
-    this.username = username;
-    this.password = password;
+    this.username = username_ASR;
+    this.password = password_ASR;
     this.url = url;
 
     this.token = "";
