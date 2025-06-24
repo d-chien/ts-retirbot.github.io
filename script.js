@@ -1,12 +1,6 @@
 // script.js
 console.log("script.js version: 2.1.0");
 
-// 為了引入 ASRRecorder、Parser 和 TTS 這些類，它們需要是模組
-// 因此我們需要在這裡使用 import 語句
-import ASRRecorder from './ASRRecorder.js'; //
-import Parser from './Parser.js'; //
-// 假設 TTS.js 也是一個模組並導出 TTS 類
-import TTS from './TTS.js'; 
 
 const res = await fetch(`https://retibot-247393254326.us-central1.run.app/get_cred`, {
   method: "GET",
