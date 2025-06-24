@@ -1,7 +1,7 @@
 // 版本資訊
 const ASR_VERSION = "1.0.5";
 console.log(`ASRRecorder.js version ${ASR_VERSION}`);
-const res = await fetch(`https://retibot-247393254326.us-central1.run.app/get_cred`, {
+const res = fetch(`https://retibot-247393254326.us-central1.run.app/get_cred`, {
   method: "GET",
   headers: {
     "content-type": "application/json",
@@ -9,9 +9,9 @@ const res = await fetch(`https://retibot-247393254326.us-central1.run.app/get_cr
 }).catch((error) => {
   throw new Error(`Unable to login: ${error}`);
 });
-const json = await res.json();
-const username = json.username;
-const password = json.password;
+const json = res.json();
+const username = json.ACCOUNT;
+const password = json.PASSWORD;
 
 
 
