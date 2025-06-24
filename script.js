@@ -29,6 +29,44 @@ const proxy = new Proxy({ status: false, isRecording: false }, handler);
 
 let sessionId_A = null;
 
+// --- 新增: CSRF 管理器 ---
+// 確保這是您的 Flask 後端 URL，特別是端口號
+const BACKEND_FLASK_URL = "https://retibot-247393254326.us-central1.run.app"; // 請根據您的實際後端地址調整
+
+class CsrfManager {
+    constructor() {
+        this.csrfToken = null;
+    }
+
+    async fetchCsrfToken() {
+        try {
+            const response = await fetch(`${BACKEND_FLASK_URL}/get-csrf-token`);
+            if (!response.ok) {
+                throw new Error(`Failed to fetch CSRF token: ${response.status} ${response.statusText}`);
+            }
+            const data = await response.json();
+            this.csrfToken = data.csrf_token;
+            console.log("CSRF Token fetched successfully.");
+        } catch (error) {
+            console.error("Error fetching CSRF token:", error);
+            // 根據您的錯誤處理策略，這裡可能需要阻止後續操作或提示使用者
+        }
+    }
+
+    getCsrfHeaders() {
+        if (!this.csrfToken) {
+            console.warn("CSRF token is not available. Please ensure fetchCsrfToken() was called and successful.");
+            // 嚴格模式下，這裡可以拋出錯誤，阻止未受保護的請求
+            return {};
+        }
+        return {
+            "X-CSRFToken": this.csrfToken,
+        };
+    }
+}
+
+const csrfManager = new CsrfManager(); // 實例化 CSRF 管理器
+
 // 將所有 DOM 相關的初始化和事件綁定放在這一個 DOMContentLoaded 監聽器中
 document.addEventListener('DOMContentLoaded', async () => {
     // 抓取 DOM 元素
@@ -40,26 +78,46 @@ document.addEventListener('DOMContentLoaded', async () => {
     const hideBannerButton = document.getElementById('hide-banner-button');
     const textInput = document.getElementById('textInput');
 
+    // **重要：在頁面載入時就獲取 CSRF Token**
+    await csrfManager.fetchCsrfToken();
+
     // **在這裡安全地獲取憑證**
+    // try {
+    //     console.log("嘗試獲取 ASR 憑證...");
+    //     const credResponse = await callGetCredApi();
+    //     const response = await fetch(`https://retibot-247393254326.us-central1.run.app/get_cred`, {
+    //         method: "GET",
+    //         headers: {
+    //             "content-type": "application/json",
+    //         }
+    //     });
+    //     const json = await response.json(); // 確保 await
+    //     BOB = json.BOB;
+    //     STEVE = json.STEVE;
+    //     console.log('ASR 憑證獲取成功。');
+    //     console.log('Account aquired');
+
+    // } catch (error) {
+    //     console.error(`無法獲取 ASR 憑證: ${error}`);
+    //     // 顯示錯誤訊息給使用者或禁用功能
+    //     recordButton.textContent = "憑證錯誤";
+    //     return; // 無法獲取憑證則停止初始化
+    // }
     try {
         console.log("嘗試獲取 ASR 憑證...");
-        const response = await fetch(`https://retibot-247393254326.us-central1.run.app/get_cred`, {
-            method: "GET",
-            headers: {
-                "content-type": "application/json",
-            }
-        });
-        const json = await response.json(); // 確保 await
-        BOB = json.BOB;
-        STEVE = json.STEVE;
-        console.log('ASR 憑證獲取成功。');
-        console.log('Account aquired');
-
+        // 假設這是一個 GET 請求，並且不需要 CSRF 保護
+        // 但如果這個 get_cred_api 是會改變後端狀態的 POST 請求，則需要下面的 CSRF 頭
+        // 由於之前我們將其後端改為 POST 且受 CSRF 保護，這裡需要相應調整
+        const credResponse = await callGetCredApi(); // 調用調整後的函數
+        if (credResponse) {
+            username_ASR = credResponse.BOB; // 假設這是用戶名
+            password_ASR = credResponse.STEVE; // 假設這是密碼
+            console.log("ASR 憑證獲取成功。");
+        } else {
+            console.warn("未能獲取 ASR 憑證。");
+        }
     } catch (error) {
-        console.error(`無法獲取 ASR 憑證: ${error}`);
-        // 顯示錯誤訊息給使用者或禁用功能
-        recordButton.textContent = "憑證錯誤";
-        return; // 無法獲取憑證則停止初始化
+        console.error("獲取 ASR 憑證時發生錯誤:", error);
     }
 
     // 禁用按鈕直到登入成功
@@ -151,6 +209,72 @@ document.addEventListener('DOMContentLoaded', async () => {
         }
     });
 });
+
+// 新增: 調整 callServePdfApi 函數以包含 CSRF Token
+async function callServePdfApi(sessionId) {
+  // 確保 CSRF Token 已經獲取
+  if (!csrfManager.csrfToken) {
+      console.error("CSRF token not available. Cannot call serve_pdf_by_session API.");
+      // 可以選擇重新嘗試獲取或直接返回錯誤
+      await csrfManager.fetchCsrfToken(); // 嘗試重新獲取
+      if (!csrfManager.csrfToken) return; // 如果還是沒有，則返回
+  }
+
+  try {
+      const response = await fetch(`${BACKEND_FLASK_URL}/genpdf`, {
+          method: "POST",
+          headers: {
+              "Content-Type": "application/json",
+              ...csrfManager.getCsrfHeaders(), // <-- 添加 CSRF Token 頭部
+          },
+          body: JSON.stringify({ session_id: sessionId }), // 根據後端要求，將 session_id 放在 body 中
+      });
+
+      if (!response.ok) {
+          const errorText = await response.text();
+          throw new Error(`PDF service API call failed: ${response.status} - ${errorText}`);
+      }
+
+      const data = await response.json();
+      console.log("PDF service response:", data);
+      return data;
+  } catch (error) {
+      console.error("Error calling serve_pdf_by_session:", error);
+  }
+}
+
+// 新增: 調整 callGetCredApi 函數以包含 CSRF Token
+async function callGetCredApi() {
+  // 確保 CSRF Token 已經獲取
+  if (!csrfManager.csrfToken) {
+      console.error("CSRF token not available. Cannot call get_cred API.");
+      await csrfManager.fetchCsrfToken(); // 嘗試重新獲取
+      if (!csrfManager.csrfToken) return;
+  }
+
+  try {
+      const response = await fetch(`${BACKEND_FLASK_URL}/get_cred`, {
+          method: "POST", // 後端已改為 POST
+          headers: {
+              "Content-Type": "application/json",
+              ...csrfManager.getCsrfHeaders(), // <-- 添加 CSRF Token 頭部
+          },
+          body: JSON.stringify({}), // 如果 get_cred 不需要 body 內容，可以傳遞空對象
+      });
+
+      if (!response.ok) {
+          const errorText = await response.text();
+          throw new Error(`Get credentials API call failed: ${response.status} - ${errorText}`);
+      }
+
+      const data = await response.json();
+      console.log("Get credentials response:", data);
+      return data;
+  } catch (error) {
+      console.error("Error calling get_cred:", error);
+      throw error; // 重新拋出錯誤，讓調用方 (如 DOMContentLoaded 裡面的 try-catch) 處理
+  }
+}
 
 
 async function initSession() {
