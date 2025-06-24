@@ -1,6 +1,6 @@
-const username = process.env.ACCOUNT;
-const password = process.env.PASSWORD;
-console.log('Account aquired')
+// const username = process.env.ACCOUNT;
+// const password = process.env.PASSWORD;
+// console.log('Account aquired')
 
 class TTS {
         async synthesizeSpeech(text) {

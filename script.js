@@ -1,5 +1,4 @@
 console.log("script.js version: 2.1.0");
-import DOMPurify from 'dompurify';
 
 let isSttReady = false;
 let isRecording = false;
