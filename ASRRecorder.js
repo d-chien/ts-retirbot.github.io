@@ -27,15 +27,15 @@ class ASRRecorder {
    * @param {string} url
    * @param {boolean} isRecord
    */
-  // constructor(username, password, url, isRecord) {
-  constructor(url, isRecord) {
-    // if (!username) {
-    //   throw new Error("Please enter username");
-    // }
+  constructor(username, password, url, isRecord) {
+  // constructor(url, isRecord) {
+    if (!username) {
+      throw new Error("Please enter username");
+    }
 
-    // if (!password) {
-    //   throw new Error("Please enter password");
-    // }
+    if (!password) {
+      throw new Error("Please enter password");
+    }
 
     if (!url) {
       throw new Error("Please enter API url");
@@ -48,8 +48,8 @@ class ASRRecorder {
 
     this.device = "default";
 
-    this.username = username_ASR;
-    this.password = password_ASR;
+    this.username = username;
+    this.password = password;
     this.url = url;
 
     this.token = "";
