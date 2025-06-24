@@ -1,6 +1,11 @@
 // script.js
 console.log("script.js version: 2.2.0");
 
+const createDOMPurify = require('dompurify');
+const { JSDOM } = require('jsdom');
+const window = new JSDOM('').window;
+const DOMPurify = createDOMPurify(window);
+
 let isSttReady = false;
 let isRecording = false;
 
@@ -214,6 +219,11 @@ async function sendMessage() {
     const text = input.value.trim();
     if (text === '') return;
 
+    if (text.length>300) {
+      alert('訊息過長');
+      return;
+    };
+
     appendMessage('user', text);
     input.value = '';
 
@@ -227,7 +237,7 @@ async function sendMessage() {
         .then(res => res.json())
         .then(async data => {
             removeLoading();
-            appendMessage('bot', data.response);
+            appendMessage('bot', DOMPurify.sanitize(data.response));
             const TTS_TW = new TTS();
             const textFromAnotherBot = data.res_for_sound;
             TTS_TW.setLanguage(languageSelect_A);
@@ -330,8 +340,11 @@ function appendMessage(sender, text) {
 
         const bubble = document.createElement('div');
         bubble.className = ' bubble';
-        // 這裡不再使用 DOMPurify，如果需要，請確保您已載入它
-        bubble.innerHTML = marked.parse(text);
+        
+        const unsafeHTML = marked.parse(text);
+        const sanitizedHTML = DOMPurify.sanitize(unsafeHTML);
+
+        bubble.innerHTML = sanitizedHTML;
         message.appendChild(bubble);
 
     } else if (sender === 'user') {
