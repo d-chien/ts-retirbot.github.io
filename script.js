@@ -3,7 +3,6 @@ console.log("script.js version: 2.2.0");
 
 const createDOMPurify = require('dompurify');
 const { JSDOM } = require('jsdom');
-const window = new JSDOM('').window;
 const DOMPurify = createDOMPurify(window);
 
 let isSttReady = false;
