@@ -1,7 +1,6 @@
 // script.js
 console.log("script.js version: 2.2.0");
 
-const DOMPurify = createDOMPurify(window);
 
 let isSttReady = false;
 let isRecording = false;
