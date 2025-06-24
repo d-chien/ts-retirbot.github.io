@@ -1,9 +1,9 @@
 // 版本資訊
 const ASR_VERSION = "1.0.5";
 console.log(`ASRRecorder.js version ${ASR_VERSION}`);
-const username = process.env.ACCOUNT;
-const password = process.env.PASSWORD;
-console.log('Account aquired')
+// const username = process.env.ACCOUNT;
+// const password = process.env.PASSWORD;
+// console.log('Account aquired')
 
 
 class ASRRecorder {
