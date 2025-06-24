@@ -22,19 +22,19 @@ class ASRRecorder {
   /**
    * 初始化 ASR 系統服務
    *
-   * @param {string} username
-   * @param {string} password
+   * @param {string} bob
+   * @param {string} steve
    * @param {string} url
    * @param {boolean} isRecord
    */
-  constructor(username, password, url, isRecord) {
+  constructor(bob, steve, url, isRecord) {
   // constructor(url, isRecord) {
-    if (!username) {
-      throw new Error("Please enter username");
+    if (!bob) {
+      throw new Error("Please enter bob");
     }
 
-    if (!password) {
-      throw new Error("Please enter password");
+    if (!steve) {
+      throw new Error("Please enter steve");
     }
 
     if (!url) {
@@ -48,8 +48,8 @@ class ASRRecorder {
 
     this.device = "default";
 
-    this.username = username;
-    this.password = password;
+    this.bob = bob;
+    this.steve = steve;
     this.url = url;
 
     this.token = "";
@@ -87,8 +87,8 @@ class ASRRecorder {
         "content-type": "application/json",
       },
       body: JSON.stringify({
-        username: this.username,
-        password: this.password,
+        username: this.bob,
+        password: this.steve,
       }),
     }).catch((error) => {
       throw new Error(`Unable to login: ${error}`);
@@ -455,8 +455,8 @@ class ASRRecorder {
   destroy() {
     this.stop();
 
-    this.username = "";
-    this.password = "";
+    this.bob = "";
+    this.steve = "";
     this.model = "basic-model";
     this.token = "";
     this.wsUrl = "";

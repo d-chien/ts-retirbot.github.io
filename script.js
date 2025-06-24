@@ -50,8 +50,8 @@ document.addEventListener('DOMContentLoaded', async () => {
             }
         });
         const json = await response.json(); // 確保 await
-        username_ASR = json.ACCOUNT;
-        password_ASR = json.PASSWORD;
+        BOB = json.BOB;
+        STEVE = json.STEVE;
         console.log('ASR 憑證獲取成功。');
         console.log('Account aquired');
 
@@ -433,8 +433,8 @@ async function handleInit() {
 
         // 關鍵修正：確保傳入 username_ASR, password_ASR, url_ASR, recordFileCheckbox
         Recorder = new ASRRecorder(
-            username_ASR, // 傳遞 username
-            password_ASR, // 傳遞 password
+            BOB, // 傳遞 username
+            STEVE, // 傳遞 password
             url_ASR,
             recordFileCheckbox
         );

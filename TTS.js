@@ -5,8 +5,8 @@
 class TTS {
         async synthesizeSpeech(text) {
             const credentials = {
-                username: username_ASR,
-                password: password_ASR,
+                bob: BOB,
+                steve: STEVE,
                 rememberMe: 1
             };
             const serverUrl = 'https://ttsapi03.bronci.com.tw/';
@@ -23,8 +23,8 @@ class TTS {
                     'Content-Type': 'application/json'
                 },
                 body: JSON.stringify({
-                username: credentials.username,
-                password: credentials.password,
+                username: credentials.bob,
+                password: credentials.steve,
                 }),
              }).catch((error) => {
                 throw new Error(`Unable to login: ${error}`);
