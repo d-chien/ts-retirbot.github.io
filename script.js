@@ -1,18 +1,5 @@
 // script.js
-console.log("script.js version: 2.1.0");
-
-
-// const res = fetch(`https://retibot-247393254326.us-central1.run.app/get_cred`, {
-//   method: "GET",
-//   headers: {
-//     "content-type": "application/json",
-//   }
-// }).catch((error) => {
-//   throw new Error(`Unable to login: ${error}`);
-// });
-// const json = res.json();
-// const username = json.ACCOUNT;
-// const password = json.PASSWORD;
+console.log("script.js version: 2.2.0");
 
 let isSttReady = false;
 let isRecording = false;
@@ -25,36 +12,47 @@ const recordFileCheckbox = false;
 const parserUrl = "";
 const devices = "default";
 
-// 將 Recorder 變數移動到 DOMContentLoaded 內部，確保在獲取憑證後初始化
 let Recorder = null; // 初始化為 null
 
-let autoScroll = true;
+let autoScroll = true; // 確保這個變數有被宣告
+
+/**
+ * 使用代理器處理狀態
+ */
+const handler = {
+    set: function (obj, props, value) {
+        obj[props] = value;
+    },
+};
+const proxy = new Proxy({ status: false, isRecording: false }, handler);
+
+let sessionId_A = null;
 
 // 將所有 DOM 相關的初始化和事件綁定放在這一個 DOMContentLoaded 監聽器中
 document.addEventListener('DOMContentLoaded', async () => {
     // 抓取 DOM 元素
     const recordButton = document.getElementById('record-button');
-    const settingsButton = document.getElementById('settings-button'); // 新增：設定按鈕
-    const voiceToggle = document.getElementById('voice-toggle'); // 新增：語音開關
-    const languageSelect = document.getElementById('language-select'); // 新增：語言選擇
-    const sendButton = document.getElementById('send-button'); // 新增：發送按鈕
-    const hideBannerButton = document.getElementById('hide-banner-button'); // 新增：隱藏橫幅按鈕
-    const textInput = document.getElementById('textInput'); // 獲取文字輸入框
+    const settingsButton = document.getElementById('settings-button');
+    const voiceToggle = document.getElementById('voice-toggle');
+    const languageSelect = document.getElementById('language-select');
+    const sendButton = document.getElementById('send-button');
+    const hideBannerButton = document.getElementById('hide-banner-button');
+    const textInput = document.getElementById('textInput');
 
     // **在這裡安全地獲取憑證**
     try {
-      console.log("嘗試獲取 ASR 憑證...");
-      const response = await fetch(`https://retibot-247393254326.us-central1.run.app/get_cred`, {
-          method: "GET",
-          headers: {
-              "content-type": "application/json",
-          }
-      });
-      const json = await response.json(); // 確保 await
-      username_ASR = json.ACCOUNT;
-      password_ASR = json.PASSWORD;
-      console.log('ASR 憑證獲取成功。');
-      console.log('Account aquired'); // 放在獲取成功後
+        console.log("嘗試獲取 ASR 憑證...");
+        const response = await fetch(`https://retibot-247393254326.us-central1.run.app/get_cred`, {
+            method: "GET",
+            headers: {
+                "content-type": "application/json",
+            }
+        });
+        const json = await response.json(); // 確保 await
+        username_ASR = json.ACCOUNT;
+        password_ASR = json.PASSWORD;
+        console.log('ASR 憑證獲取成功。');
+        console.log('Account aquired');
 
     } catch (error) {
         console.error(`無法獲取 ASR 憑證: ${error}`);
@@ -76,11 +74,12 @@ document.addEventListener('DOMContentLoaded', async () => {
         console.error("Session 初始化失敗");
     }
 
+    // 確保 handleInit 在憑證獲取後執行
     async function setupSTT() {
         try {
             console.log("語音功能開始初始化...");
             await navigator.mediaDevices.getUserMedia({ audio: true });
-            await handleInit();
+            await handleInit(); // 這裡會使用到 username_ASR 和 password_ASR
             console.log("初始化完成。");
 
             isSttReady = true;
@@ -91,6 +90,8 @@ document.addEventListener('DOMContentLoaded', async () => {
         } catch (error) {
             console.error("錄音初始化或取得模型失敗:", error);
             recordButton.textContent = "錄音錯誤";
+            // 如果初始化失敗，確保 Recorder 設為 null 或保持為 null
+            Recorder = null; // 確保 Recorder 狀態正確
         }
     }
 
@@ -100,7 +101,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     recordButton.addEventListener('click', async () => {
         if (!isSttReady) {
             console.warn("錄音連接尚未準備好，無法錄音。");
-            return; 
+            return;
         }
 
         if (!isRecording) {
@@ -114,20 +115,20 @@ document.addEventListener('DOMContentLoaded', async () => {
 
             } catch (error) {
                 console.error("開始錄音失敗:", error);
-                isRecording = false; 
+                isRecording = false;
                 recordButton.textContent = "🎤 語音輸入";
             }
         } else {
             // --- 停止錄音 ---
-            try { 
-                console.log("嘗試停止錄音..."); 
-                await handleStop(); 
-                isRecording = false; 
-                recordButton.textContent = "🎤 語音輸入"; 
-                console.log("錄音已停止。"); 
+            try {
+                console.log("嘗試停止錄音...");
+                await handleStop();
+                isRecording = false;
+                recordButton.textContent = "🎤 語音輸入";
+                console.log("錄音已停止。");
 
-            } catch (error) { 
-                console.error("停止錄音失敗:", error); 
+            } catch (error) {
+                console.error("停止錄音失敗:", error);
                 isRecording = false;
                 recordButton.textContent = "🎤 語音輸入";
             }
@@ -135,11 +136,11 @@ document.addEventListener('DOMContentLoaded', async () => {
     });
 
     // 綁定事件監聽器
-    settingsButton.addEventListener('click', toggleMenu); 
-    voiceToggle.addEventListener('change', toggleVoice); 
-    languageSelect.addEventListener('change', saveLanguage); 
-    sendButton.addEventListener('click', sendMessage); 
-    hideBannerButton.addEventListener('click', hideBanner); 
+    settingsButton.addEventListener('click', toggleMenu);
+    voiceToggle.addEventListener('change', toggleVoice);
+    languageSelect.addEventListener('change', saveLanguage);
+    sendButton.addEventListener('click', sendMessage);
+    hideBannerButton.addEventListener('click', hideBanner);
 
     // keyboard watching
     textInput.addEventListener('keypress', (event) => {
@@ -150,18 +151,6 @@ document.addEventListener('DOMContentLoaded', async () => {
     });
 });
 
-
-/**
-* 使用代理器處理狀態
-*/
-const handler = {
-    set: function (obj, props, value) {
-        obj[props] = value;
-    },
-};
-const proxy = new Proxy({ status: false, isRecording: false }, handler);
-
-let sessionId_A = null;
 
 async function initSession() {
     try {
@@ -187,8 +176,6 @@ async function initSession() {
 
 /**
  * 判斷是否為桌面裝置
- * 這裡使用較為簡單的判斷方式，更精確的判斷可能需要更複雜的邏輯。
- * @returns {boolean} 如果是桌面裝置則返回 true，否則返回 false。
  */
 function isDesktopDevice() {
     const userAgent = navigator.userAgent.toLowerCase();
@@ -251,7 +238,7 @@ async function sendMessage() {
                 appendLoading();
                 if (data.ending === 1) {
                     try {
-                        await generatePDF(data); 
+                        await generatePDF(data);
                     } catch (error) {
                         console.error("Error generating PDF:", error);
                         appendMessage('bot', "PDF 報告生成失敗。");
@@ -343,9 +330,8 @@ function appendMessage(sender, text) {
 
         const bubble = document.createElement('div');
         bubble.className = ' bubble';
-        // DOMPurify 這裡可以繼續使用，假設您有載入它或自己處理 XSS
-        // 如果您完全不想使用 DOMPurify，請移除此行和相關的載入
-        bubble.innerHTML = marked.parse(text); 
+        // 這裡不再使用 DOMPurify，如果需要，請確保您已載入它
+        bubble.innerHTML = marked.parse(text);
         message.appendChild(bubble);
 
     } else if (sender === 'user') {
@@ -433,19 +419,14 @@ async function getUserMediaPermission() {
  * 初始化
  */
 async function handleInit() {
-    // 移除 ProcessingInstruction.env.NODE_ENV，因為前端不支援
-    // if (ProcessingInstruction.env.NODE_ENV === 'development') {
-    //   console.log('Debug info')
-    // }
-
     try {
         handleDestroy();
 
-        // 這裡確保傳入 username_ASR 和 password_ASR
+        // 關鍵修正：確保傳入 username_ASR, password_ASR, url_ASR, recordFileCheckbox
         Recorder = new ASRRecorder(
-            username_ASR,
-            password_ASR,
-            url,
+            username_ASR, // 傳遞 username
+            password_ASR, // 傳遞 password
+            url_ASR,
             recordFileCheckbox
         );
         console.log("Initialized");
@@ -453,6 +434,7 @@ async function handleInit() {
     } catch (error) {
         console.log("初始化錯誤：", error);
         proxy.status = false;
+        Recorder = null; // 初始化失敗時確保 Recorder 為 null
     }
 }
 
@@ -460,46 +442,50 @@ async function handleInit() {
  * 開始轉換聲音資料
  */
 async function handleStart() {
-  const parserUrlValue = parserUrl;
-  const model = null;
-  const deviceValue = null;
+    const parserUrlValue = parserUrl;
+    const model = null;
+    const deviceValue = null;
 
-  try {
-      // 確保 Recorder 存在才呼叫 start
-      if (Recorder) {
-          await Recorder.start(model, deviceValue, parserUrlValue, (data) => {
-              handleRender(data);
-          });
-      } else {
-          throw new Error("Recorder is not initialized.");
-      }
-      await setScreenLock();
-      proxy.isRecording = true;
-  } catch (error) {
-      console.log(error);
-      handleStop();
-  }
+    try {
+        // 確保 Recorder 存在才呼叫 start
+        if (Recorder) {
+            await Recorder.start(model, deviceValue, parserUrlValue, (data) => {
+                handleRender(data);
+            });
+        } else {
+            // 這個錯誤很可能是因為 handleInit 失敗了
+            throw new Error("Recorder is not initialized.");
+        }
+        await setScreenLock();
+        proxy.isRecording = true;
+    } catch (error) {
+        console.error(error); // 改為 console.error 更清晰
+        handleStop();
+    }
 }
 
 /**
  * 停止轉換聲音資料
  */
 async function handleStop() {
-  // 確保 Recorder 存在才呼叫 stop
-  if (Recorder) {
-      await Recorder.stop();
-  } else {
-      console.warn("Recorder is null, cannot stop.");
-  }
-  await releaseScreenLock();
-  proxy.isRecording = false;
+    // 確保 Recorder 存在才呼叫 stop
+    if (Recorder) {
+        await Recorder.stop();
+    } else {
+        console.warn("Recorder is null, cannot stop.");
+    }
+    await releaseScreenLock();
+    proxy.isRecording = false;
 }
 
 /**
  * 當你離開頁面時，若頁面有 keep-alive 機制，請用此函式停止轉換聲音資料及回復 ASRRecorder 初始狀態
  */
 function handleDestroy() {
-    if (Recorder) Recorder.destroy();
+    if (Recorder) {
+        Recorder.destroy();
+        Recorder = null; // 銷毀後將 Recorder 設為 null
+    }
 }
 
 /**
