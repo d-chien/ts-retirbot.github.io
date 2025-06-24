@@ -25,6 +25,11 @@ const recordFileCheckbox = false;
 const parserUrl = "";
 const devices = "default";
 
+// 將 Recorder 變數移動到 DOMContentLoaded 內部，確保在獲取憑證後初始化
+let Recorder = null; // 初始化為 null
+
+let autoScroll = true;
+
 // 將所有 DOM 相關的初始化和事件綁定放在這一個 DOMContentLoaded 監聽器中
 document.addEventListener('DOMContentLoaded', async () => {
     // 抓取 DOM 元素
@@ -145,10 +150,6 @@ document.addEventListener('DOMContentLoaded', async () => {
     });
 });
 
-
-
-let Recorder = null;
-let autoScroll = true;
 
 /**
 * 使用代理器處理狀態
@@ -459,29 +460,39 @@ async function handleInit() {
  * 開始轉換聲音資料
  */
 async function handleStart() {
-    const parserUrlValue = parserUrl;
-    const model = null;
-    const deviceValue = null;
+  const parserUrlValue = parserUrl;
+  const model = null;
+  const deviceValue = null;
 
-    try {
-        await Recorder.start(model, deviceValue, parserUrlValue, (data) => {
-            handleRender(data);
-        });
-        await setScreenLock();
-        proxy.isRecording = true;
-    } catch (error) {
-        console.log(error);
-        handleStop();
-    }
+  try {
+      // 確保 Recorder 存在才呼叫 start
+      if (Recorder) {
+          await Recorder.start(model, deviceValue, parserUrlValue, (data) => {
+              handleRender(data);
+          });
+      } else {
+          throw new Error("Recorder is not initialized.");
+      }
+      await setScreenLock();
+      proxy.isRecording = true;
+  } catch (error) {
+      console.log(error);
+      handleStop();
+  }
 }
 
 /**
  * 停止轉換聲音資料
  */
 async function handleStop() {
-    await Recorder.stop();
-    await releaseScreenLock();
-    proxy.isRecording = false;
+  // 確保 Recorder 存在才呼叫 stop
+  if (Recorder) {
+      await Recorder.stop();
+  } else {
+      console.warn("Recorder is null, cannot stop.");
+  }
+  await releaseScreenLock();
+  proxy.isRecording = false;
 }
 
 /**

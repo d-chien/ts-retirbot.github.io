@@ -5,8 +5,8 @@
 class TTS {
         async synthesizeSpeech(text) {
             const credentials = {
-                username: username,
-                password: password,
+                username: username_ASR,
+                password: password_ASR,
                 rememberMe: 1
             };
             const serverUrl = 'https://ttsapi03.bronci.com.tw/';
