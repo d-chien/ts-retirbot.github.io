@@ -286,7 +286,7 @@ async function callGetCredApi() {
 
   try {
       const response = await fetch(`${BACKEND_FLASK_URL}/get_cred`, {
-          method: "POST", // 後端已改為 POST
+          method: "GET", // 後端已改為 GET
           headers: {
               "Content-Type": "application/json",
               ...csrfManager.getCsrfHeaders(), // <-- 添加 CSRF Token 頭部
