@@ -285,13 +285,13 @@ async function callGetCredApi() {
   }
 
   try {
+      console.log('start fetching cred')
       const response = await fetch(`${BACKEND_FLASK_URL}/get_cred`, {
           method: "GET", // 後端已改為 GET
           headers: {
               "Content-Type": "application/json",
               ...csrfManager.getCsrfHeaders(), // <-- 添加 CSRF Token 頭部
           },
-          body: JSON.stringify({}), // 如果 get_cred 不需要 body 內容，可以傳遞空對象
       });
 
       if (!response.ok) {
