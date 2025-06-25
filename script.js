@@ -257,6 +257,7 @@ async function callServePdfApi(sessionId) {
               ...csrfManager.getCsrfHeaders(), // <-- 添加 CSRF Token 頭部
           },
           body: JSON.stringify({ session_id: sessionId }), // 根據後端要求，將 session_id 放在 body 中
+          credentials: 'include',
       });
 
       if (!response.ok) {
@@ -290,6 +291,7 @@ async function callGetCredApi() {
           method: "GET", // 後端已改為 GET
           headers: {
               "Content-Type": "application/json",
+              credentials: 'include',
               ...csrfManager.getCsrfHeaders(), // <-- 添加 CSRF Token 頭部
           },
       });
@@ -317,7 +319,7 @@ async function initSession() {
             credentials: 'include'
         };
 
-        const response = await fetch("https://retibot-247393254326.us-central1.run.app/init", requestOptions);
+        const response = await fetch("https://retibot-247393254326.us-central1.run.app/init", {credentials: 'include'});
         const result = await response.json();
         console.log(result);
 
@@ -384,7 +386,7 @@ async function sendMessage() {
 
     fetch('https://retibot-247393254326.us-central1.run.app/chat', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 'Content-Type': 'application/json',credentials:'include' },
         body: JSON.stringify({ session_id: sessionId_A, message: text })
     })
         .then(res => res.json())
@@ -553,12 +555,13 @@ async function generatePDF(data) {
     try {
         const response = await fetch('https://retibot-247393254326.us-central1.run.app/genpdf', {
             method: 'POST',
+            credentials: 'include',
             headers: { 
               'Content-Type': 'application/json',
               ...csrfManager.getCsrfHeaders(), // <-- 添加 CSRF Token 頭部
              },
             body: JSON.stringify({ session_id: data.session_id, proposal: data.response }),
-            credentials: 'include'
+            
         });
 
         if (!response.ok) {
