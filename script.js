@@ -315,11 +315,13 @@ async function initSession() {
     try {
         const requestOptions = {
             method: "POST",
-            redirect: "follow",
+            // redirect: "follow",
             credentials: 'include'
         };
 
-        const response = await fetch("https://retibot-247393254326.us-central1.run.app/init", {credentials: 'include'});
+        const response = await fetch("https://retibot-247393254326.us-central1.run.app/init",
+          requestOptions
+        );
         const result = await response.json();
         console.log(result);
 
