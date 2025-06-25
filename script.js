@@ -300,7 +300,7 @@ async function callGetCredApi() {
       }
 
       const data = await response.json();
-      console.log("Get credentials response:", data);
+      // console.log("Get credentials response:", data);
       return data;
   } catch (error) {
       console.error("Error calling get_cred:", error);
@@ -544,7 +544,10 @@ async function generatePDF(data) {
     try {
         const response = await fetch('https://retibot-247393254326.us-central1.run.app/genpdf', {
             method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
+            headers: { 
+              'Content-Type': 'application/json',
+              ...csrfManager.getCsrfHeaders(), // <-- 添加 CSRF Token 頭部
+             },
             body: JSON.stringify({ session_id: data.session_id, proposal: data.response }),
         });
 
