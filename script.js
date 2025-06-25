@@ -1,5 +1,5 @@
 // script.js
-console.log("script.js version: 2.2.0");
+console.log("script.js version: 2.2.1");
 
 
 let isSttReady = false;
@@ -34,35 +34,59 @@ let sessionId_A = null;
 const BACKEND_FLASK_URL = "https://retibot-247393254326.us-central1.run.app"; // 請根據您的實際後端地址調整
 
 class CsrfManager {
-    constructor() {
-        this.csrfToken = null;
-    }
+  constructor() {
+      this.csrfToken = null;
+      this.isFetchingToken = false; // 防止重複獲取
+  }
 
-    async fetchCsrfToken() {
-        try {
-            const response = await fetch(`${BACKEND_FLASK_URL}/get-csrf-token`);
-            if (!response.ok) {
-                throw new Error(`Failed to fetch CSRF token: ${response.status} ${response.statusText}`);
-            }
-            const data = await response.json();
-            this.csrfToken = data.csrf_token;
-            console.log("CSRF Token fetched successfully.");
-        } catch (error) {
-            console.error("Error fetching CSRF token:", error);
-            // 根據您的錯誤處理策略，這裡可能需要阻止後續操作或提示使用者
-        }
-    }
+  async fetchCsrfToken() {
+      if (this.csrfToken && !this.isFetchingToken) {
+          // 如果已經有 token 且沒有在獲取中，則直接返回
+          return this.csrfToken;
+      }
+      if (this.isFetchingToken) {
+          // 如果正在獲取中，等待獲取完成
+          return new Promise(resolve => {
+              const checkInterval = setInterval(() => {
+                  if (!this.isFetchingToken && this.csrfToken) {
+                      clearInterval(checkInterval);
+                      resolve(this.csrfToken);
+                  }
+              }, 100);
+          });
+      }
 
-    getCsrfHeaders() {
-        if (!this.csrfToken) {
-            console.warn("CSRF token is not available. Please ensure fetchCsrfToken() was called and successful.");
-            // 嚴格模式下，這裡可以拋出錯誤，阻止未受保護的請求
-            return {};
-        }
-        return {
-            "X-CSRFToken": this.csrfToken,
-        };
-    }
+      this.isFetchingToken = true;
+      try {
+          console.log("嘗試獲取 CSRF Token...");
+          const response = await fetch(`${BACKEND_FLASK_URL}/get-csrf-token`);
+          if (!response.ok) {
+              throw new Error(`Failed to fetch CSRF token: ${response.status} ${response.statusText}`);
+          }
+          const data = await response.json();
+          this.csrfToken = data.csrf_token;
+          console.log("CSRF Token 獲取成功。");
+          return this.csrfToken;
+      } catch (error) {
+          console.error("獲取 CSRF Token 時發生錯誤:", error);
+          this.csrfToken = null; // 確保失敗時清空
+          throw error; // 重新拋出錯誤
+      } finally {
+          this.isFetchingToken = false;
+      }
+  }
+
+  getCsrfHeaders() {
+      if (!this.csrfToken) {
+          console.warn("CSRF token is not available. Please ensure fetchCsrfToken() was called and successful.");
+          // 在嚴格模式下，這裡可以拋出錯誤，阻止未受保護的請求
+          // throw new Error("CSRF token missing.");
+          return {};
+      }
+      return {
+          "X-CSRFToken": this.csrfToken,
+      };
+  }
 }
 
 const csrfManager = new CsrfManager(); // 實例化 CSRF 管理器
@@ -79,7 +103,12 @@ document.addEventListener('DOMContentLoaded', async () => {
     const textInput = document.getElementById('textInput');
 
     // **重要：在頁面載入時就獲取 CSRF Token**
-    await csrfManager.fetchCsrfToken();
+    try {
+        await csrfManager.fetchCsrfToken();
+    } catch (error) {
+        console.error("應用程式啟動時獲取 CSRF Token 失敗，部分功能可能受限。", error);
+        // 這裡可以選擇顯示一個用戶友好的錯誤訊息，或者禁用某些功能
+    }
 
     // **在這裡安全地獲取憑證**
     // try {
@@ -103,12 +132,11 @@ document.addEventListener('DOMContentLoaded', async () => {
     //     recordButton.textContent = "憑證錯誤";
     //     return; // 無法獲取憑證則停止初始化
     // }
+    // **在這裡安全地獲取憑證 (這部分邏輯似乎是您原始檔案中關於 ASR 憑證的獲取，請確認其安全性)**
+    // 由於後端 /get_cred 現在是 POST 且受 CSRF 保護，這裡需要調用 callGetCredApi
     try {
         console.log("嘗試獲取 ASR 憑證...");
-        // 假設這是一個 GET 請求，並且不需要 CSRF 保護
-        // 但如果這個 get_cred_api 是會改變後端狀態的 POST 請求，則需要下面的 CSRF 頭
-        // 由於之前我們將其後端改為 POST 且受 CSRF 保護，這裡需要相應調整
-        const credResponse = await callGetCredApi(); // 調用調整後的函數
+        const credResponse = await callGetCredApi(); // 調用調整後的函數，它會包含 CSRF Token
         if (credResponse) {
             username_ASR = credResponse.BOB; // 假設這是用戶名
             password_ASR = credResponse.STEVE; // 假設這是密碼
@@ -213,15 +241,16 @@ document.addEventListener('DOMContentLoaded', async () => {
 // 新增: 調整 callServePdfApi 函數以包含 CSRF Token
 async function callServePdfApi(sessionId) {
   // 確保 CSRF Token 已經獲取
-  if (!csrfManager.csrfToken) {
-      console.error("CSRF token not available. Cannot call serve_pdf_by_session API.");
-      // 可以選擇重新嘗試獲取或直接返回錯誤
-      await csrfManager.fetchCsrfToken(); // 嘗試重新獲取
-      if (!csrfManager.csrfToken) return; // 如果還是沒有，則返回
+  // 這裡調用 fetchCsrfToken() 以防萬一在調用此函數時 CSRF Token 尚未載入
+  try {
+      await csrfManager.fetchCsrfToken();
+  } catch (error) {
+      console.error("無法獲取 CSRF Token，PDF 服務 API 調用將被取消。", error);
+      return null; // 或者拋出錯誤
   }
 
   try {
-      const response = await fetch(`${BACKEND_FLASK_URL}/genpdf`, {
+      const response = await fetch(`${BACKEND_FLASK_URL}/serve_pdf_by_session`, {
           method: "POST",
           headers: {
               "Content-Type": "application/json",
@@ -240,16 +269,19 @@ async function callServePdfApi(sessionId) {
       return data;
   } catch (error) {
       console.error("Error calling serve_pdf_by_session:", error);
+      throw error; // 重新拋出錯誤
   }
 }
 
 // 新增: 調整 callGetCredApi 函數以包含 CSRF Token
 async function callGetCredApi() {
   // 確保 CSRF Token 已經獲取
-  if (!csrfManager.csrfToken) {
-      console.error("CSRF token not available. Cannot call get_cred API.");
-      await csrfManager.fetchCsrfToken(); // 嘗試重新獲取
-      if (!csrfManager.csrfToken) return;
+  // 這裡調用 fetchCsrfToken() 以防萬一在調用此函數時 CSRF Token 尚未載入
+  try {
+      await csrfManager.fetchCsrfToken();
+  } catch (error) {
+      console.error("無法獲取 CSRF Token，獲取憑證 API 調用將被取消。", error);
+      return null; // 或者拋出錯誤
   }
 
   try {
