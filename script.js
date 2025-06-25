@@ -59,7 +59,7 @@ class CsrfManager {
       this.isFetchingToken = true;
       try {
           console.log("嘗試獲取 CSRF Token...");
-          const response = await fetch(`${BACKEND_FLASK_URL}/get-csrf-token`,{credentials: 'include'});
+          const response = await fetch(`${BACKEND_FLASK_URL}/want_csrft`,{credentials: 'include'});
           if (!response.ok) {
               throw new Error(`Failed to fetch CSRF token: ${response.status} ${response.statusText}`);
           }
@@ -156,7 +156,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     const sessionId = await initSession();
     if (sessionId) {
         console.log("Session 已初始化，sessionId:", sessionId);
-        sessionId_A = sessionId;
+        sessionId_A = DOMPurify.sanitize(sessionId);
     } else {
         console.error("Session 初始化失敗");
     }
@@ -287,7 +287,7 @@ async function callGetCredApi() {
 
   try {
       console.log('start fetching cred')
-      const response = await fetch(`${BACKEND_FLASK_URL}/get_cred`, {
+      const response = await fetch(`${BACKEND_FLASK_URL}/wake_up_and_work`, {
           method: "GET", // 後端已改為 GET
           credentials: 'include',
           headers: {
@@ -327,7 +327,7 @@ async function initSession() {
 
         appendMessage('bot', result.response);
 
-        const sessionId = result.session_id;
+        const sessionId = DOMPurify.sanitize(result.session_id);
         return sessionId;
     } catch (error) {
         console.error('初始化會話失敗:', error);
