@@ -541,6 +541,14 @@ function removeLoading() {
 }
 
 async function generatePDF(data) {
+    // 確保 CSRF Token 已經獲取
+    try {
+        await csrfManager.fetchCsrfToken(); // 重新獲取或確保已獲取最新 token
+    } catch (error) {
+        console.error("無法獲取 CSRF Token，/genpdf API 調用將被取消。", error);
+        return null; // 或者拋出錯誤
+    }
+    
     try {
         const response = await fetch('https://retibot-247393254326.us-central1.run.app/genpdf', {
             method: 'POST',
