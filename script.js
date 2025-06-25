@@ -138,8 +138,8 @@ document.addEventListener('DOMContentLoaded', async () => {
         console.log("嘗試獲取 ASR 憑證...");
         const credResponse = await callGetCredApi(); // 調用調整後的函數，它會包含 CSRF Token
         if (credResponse) {
-            username_ASR = credResponse.BOB; // 假設這是用戶名
-            password_ASR = credResponse.STEVE; // 假設這是密碼
+            BOB = credResponse.BOB; // 假設這是用戶名
+            STEVE = credResponse.STEVE; // 假設這是密碼
             console.log("ASR 憑證獲取成功。");
         } else {
             console.warn("未能獲取 ASR 憑證。");
