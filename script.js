@@ -59,7 +59,7 @@ class CsrfManager {
       this.isFetchingToken = true;
       try {
           console.log("嘗試獲取 CSRF Token...");
-          const response = await fetch(`${BACKEND_FLASK_URL}/get-csrf-token`);
+          const response = await fetch(`${BACKEND_FLASK_URL}/get-csrf-token`,{credentials: 'include'});
           if (!response.ok) {
               throw new Error(`Failed to fetch CSRF token: ${response.status} ${response.statusText}`);
           }
@@ -313,7 +313,8 @@ async function initSession() {
     try {
         const requestOptions = {
             method: "POST",
-            redirect: "follow"
+            redirect: "follow",
+            credentials: 'include'
         };
 
         const response = await fetch("https://retibot-247393254326.us-central1.run.app/init", requestOptions);
@@ -548,7 +549,7 @@ async function generatePDF(data) {
         console.error("無法獲取 CSRF Token，/genpdf API 調用將被取消。", error);
         return null; // 或者拋出錯誤
     }
-    
+
     try {
         const response = await fetch('https://retibot-247393254326.us-central1.run.app/genpdf', {
             method: 'POST',
@@ -557,6 +558,7 @@ async function generatePDF(data) {
               ...csrfManager.getCsrfHeaders(), // <-- 添加 CSRF Token 頭部
              },
             body: JSON.stringify({ session_id: data.session_id, proposal: data.response }),
+            credentials: 'include'
         });
 
         if (!response.ok) {
