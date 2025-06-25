@@ -289,9 +289,9 @@ async function callGetCredApi() {
       console.log('start fetching cred')
       const response = await fetch(`${BACKEND_FLASK_URL}/get_cred`, {
           method: "GET", // 後端已改為 GET
+          credentials: 'include',
           headers: {
               "Content-Type": "application/json",
-              credentials: 'include',
               ...csrfManager.getCsrfHeaders(), // <-- 添加 CSRF Token 頭部
           },
       });
@@ -388,7 +388,8 @@ async function sendMessage() {
 
     fetch('https://retibot-247393254326.us-central1.run.app/chat', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json',credentials:'include' },
+        credentials:'include',
+        headers: { 'Content-Type': 'application/json', },
         body: JSON.stringify({ session_id: sessionId_A, message: text })
     })
         .then(res => res.json())
