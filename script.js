@@ -399,9 +399,9 @@ async function sendMessage() {
             const TTS_TW = new TTS();
             const textFromAnotherBot = data.res_for_sound;
             TTS_TW.setLanguage(languageSelect_A);
-            if (document.getElementById('voice-toggle').checked) {
-                TTS_TW.synthesizeSpeech(textFromAnotherBot);
-            }
+            // if (document.getElementById('voice-toggle').checked) {
+            //     TTS_TW.synthesizeSpeech(textFromAnotherBot);
+            // }
             if (data.ending !== 0) {
                 appendLoading();
                 if (data.ending === 1) {
