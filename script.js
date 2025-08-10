@@ -149,8 +149,8 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
 
     // 禁用按鈕直到登入成功
-    recordButton.disabled = true;
-    recordButton.textContent = "初始化中...";
+    // recordButton.disabled = true;
+    // recordButton.textContent = "初始化中...";
 
     // 處理 session 初始化
     const sessionId = await initSession();
@@ -162,70 +162,70 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
 
     // 確保 handleInit 在憑證獲取後執行
-    async function setupSTT() {
-        try {
-            console.log("語音功能開始初始化...");
-            await navigator.mediaDevices.getUserMedia({ audio: true });
-            await handleInit(); // 這裡會使用到 username_ASR 和 password_ASR
-            console.log("初始化完成。");
+    // async function setupSTT() {
+    //     try {
+    //         console.log("語音功能開始初始化...");
+    //         await navigator.mediaDevices.getUserMedia({ audio: true });
+    //         await handleInit(); // 這裡會使用到 username_ASR 和 password_ASR
+    //         console.log("初始化完成。");
 
-            isSttReady = true;
-            recordButton.disabled = false;
-            recordButton.textContent = "🎤 語音輸入";
-            console.log("錄音已準備就緒！");
+    //         isSttReady = true;
+    //         recordButton.disabled = false;
+    //         recordButton.textContent = "🎤 語音輸入";
+    //         console.log("錄音已準備就緒！");
 
-        } catch (error) {
-            console.error("錄音初始化或取得模型失敗:", error);
-            recordButton.textContent = "錄音錯誤";
-            // 如果初始化失敗，確保 Recorder 設為 null 或保持為 null
-            Recorder = null; // 確保 Recorder 狀態正確
-        }
-    }
+    //     } catch (error) {
+    //         console.error("錄音初始化或取得模型失敗:", error);
+    //         recordButton.textContent = "錄音錯誤";
+    //         // 如果初始化失敗，確保 Recorder 設為 null 或保持為 null
+    //         Recorder = null; // 確保 Recorder 狀態正確
+    //     }
+    // }
 
-    // 執行錄音設置
-    setupSTT();
+    // // 執行錄音設置
+    // setupSTT();
 
-    recordButton.addEventListener('click', async () => {
-        if (!isSttReady) {
-            console.warn("錄音連接尚未準備好，無法錄音。");
-            return;
-        }
+    // recordButton.addEventListener('click', async () => {
+    //     if (!isSttReady) {
+    //         console.warn("錄音連接尚未準備好，無法錄音。");
+    //         return;
+    //     }
 
-        if (!isRecording) {
-            // --- 開始錄音 ---
-            try {
-                console.log("嘗試開始錄音...");
-                await handleStart();
-                isRecording = true;
-                recordButton.textContent = "⏹️ 停止輸入";
-                console.log("錄音已開始。");
+    //     if (!isRecording) {
+    //         // --- 開始錄音 ---
+    //         try {
+    //             console.log("嘗試開始錄音...");
+    //             await handleStart();
+    //             isRecording = true;
+    //             recordButton.textContent = "⏹️ 停止輸入";
+    //             console.log("錄音已開始。");
 
-            } catch (error) {
-                console.error("開始錄音失敗:", error);
-                isRecording = false;
-                recordButton.textContent = "🎤 語音輸入";
-            }
-        } else {
-            // --- 停止錄音 ---
-            try {
-                console.log("嘗試停止錄音...");
-                await handleStop();
-                isRecording = false;
-                recordButton.textContent = "🎤 語音輸入";
-                console.log("錄音已停止。");
+    //         } catch (error) {
+    //             console.error("開始錄音失敗:", error);
+    //             isRecording = false;
+    //             recordButton.textContent = "🎤 語音輸入";
+    //         }
+    //     } else {
+    //         // --- 停止錄音 ---
+    //         try {
+    //             console.log("嘗試停止錄音...");
+    //             await handleStop();
+    //             isRecording = false;
+    //             recordButton.textContent = "🎤 語音輸入";
+    //             console.log("錄音已停止。");
 
-            } catch (error) {
-                console.error("停止錄音失敗:", error);
-                isRecording = false;
-                recordButton.textContent = "🎤 語音輸入";
-            }
-        }
-    });
+    //         } catch (error) {
+    //             console.error("停止錄音失敗:", error);
+    //             isRecording = false;
+    //             recordButton.textContent = "🎤 語音輸入";
+    //         }
+    //     }
+    // });
 
     // 綁定事件監聽器
     settingsButton.addEventListener('click', toggleMenu);
-    voiceToggle.addEventListener('change', toggleVoice);
-    languageSelect.addEventListener('change', saveLanguage);
+    // voiceToggle.addEventListener('change', toggleVoice);
+    // languageSelect.addEventListener('change', saveLanguage);
     sendButton.addEventListener('click', sendMessage);
     hideBannerButton.addEventListener('click', hideBanner);
 
