@@ -30,7 +30,7 @@
         }
 
         h1 {
-            color: #004d9c; /* 台新藍 */
+            color: #e53935; /* 台新紅 */
             margin-bottom: 20px;
         }
 
@@ -41,48 +41,71 @@
 
         .button-group {
             display: flex;
-            flex-direction: column;
+            flex-direction: row; /* 預設左右排列 */
             gap: 20px;
+        }
+        
+        /* 中型裝置 (md) 以下時，改為上下排列 */
+        @media (max-width: 768px) {
+            .button-group {
+                flex-direction: column;
+            }
         }
 
         .button {
-            display: inline-block;
-            padding: 15px 30px;
+            display: flex; 
+            flex-direction: column; /* 圖片和文字上下排列 */
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
             font-size: 1.1em;
             font-weight: bold;
             border-radius: 8px;
             text-decoration: none;
             color: white;
+            flex: 1; /* 讓按鈕平均佔據空間 */
             transition: background-color 0.3s, transform 0.2s;
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
         }
 
+        .button img {
+            width: 50px; /* 設定圖片寬度，使其變大 */
+            height: 50px; /* 設定圖片高度，確保為正方形 */
+            margin-bottom: 10px; /* 圖片與文字間距 */
+        }
+
         .btn-retire {
-            background-color: #e6005c; /* 台新紅 */
+            background-color: #e53935; /* 台新紅 */
         }
 
         .btn-retire:hover {
-            background-color: #cc0052;
+            background-color: #D70C18;
             transform: translateY(-2px);
         }
 
         .btn-other {
-            background-color: #004d9c; /* 台新藍 */
+            background-color: #e53935; /* 台新藍 */
         }
 
         .btn-other:hover {
-            background-color: #003366;
+            background-color: #D70C18;
             transform: translateY(-2px);
         }
     </style>
 </head>
 <body>
     <div class="container">
-        <h1>歡迎來到我們的網站</h1>
+        <h1>台新安心退</h1>
         <p>請選擇您想前往的服務</p>
         <div class="button-group">
-            <a href="future_vision.html" class="button btn-retire">想像退休後的自己</a>
-            <a href="chatbot.html" class="button btn-other">前往另一個頁面</a>
+            <a href="future_vision.html" class="button btn-retire">
+                <img src="https://placehold.co/50x50/ffffff/e6005c?text=1" alt="退休圖片">
+                想像退休後的自己
+            </a>
+            <a href="chatbot.html" class="button btn-other">
+                <img src="https://placehold.co/50x50/ffffff/004d9c?text=2" alt="另一頁面圖片">
+                前往另一個頁面
+            </a>
         </div>
     </div>
 </body>
