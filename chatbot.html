@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name = "author" content="Angela Ko">
+    <meta name="'csrf-token" content="{{csrf_token()}}">
+    <title>安心退</title>
+    <link rel="icon" href="https://www.taishinlife.com.tw/favicon.ico" type="image/x-icon">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <header class="banner top-banner">
+        <img src="TSLI_RED.png" alt="橫幅（頂）">
+        <div class="settings" id="settings-button">⚙️</div> 
+        <div id="menu" class="menu">
+            <a href="https://www.taishinlife.com.tw/portal/contactus" target="_blank">聯絡我們</a>
+
+            <!-- <div class="voice-settings">
+                <br>
+                <label for="voice-toggle">啟動語音</label>
+                    <input type="checkbox" id="voice-toggle">
+                <div id="language-container" style="display:none;">
+                    <label for="language-select">選擇語言：</label>
+                            <select id="language-select">
+                        <option value="cmn-TW">中文</option>
+                        <option value="nan-TW">台語</option>
+                        <option value="hak-xi-TW">客語-四縣</option>
+                        <option value="hak-hoi-TW">客家-海陸</option>
+                    </select>
+                </div>
+            </div> -->
+            <br>
+        </div>
+    </header>
+
+    <main>
+        <div class="chat-container" id = "chat"></div>
+        
+
+        <div class="input-area">
+            <input type="text" id="textInput" placeholder="請輸入訊息...">
+            <button id="send-button">發送</button>
+            <!-- <button id="record-button">🎤</button> -->
+        </div>
+    </main>
+
+    <footer class="banner bottom-banner"></footer>
+    <div class="cookie-banner" id="cookie-banner" >
+        <div class="cookie-content">
+            <img src="cookie.png" alt="cookie icon" class="cookie-icon">
+            <div class="cookie-text">
+                本服務中所搜集之個人資訊僅作對話後之分析報告使用，不會挪作他用，當您點選同意即代表同意本公司搜集相關資訊。詳請參閱
+                <a href="https://www.taishinlife.com.tw/portal/privacy-policy" target="_blank" rel="noopener noreferrer">本公司隱私權政策</a>
+                說明，了解更多詳情。
+            </div>
+            <button class="cookie-btn" id="hide-banner-button">確定</button>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/marked@4.3.0/lib/marked.umd.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.1/build/qrcode.min.js" ></script>
+    <script src="https://cdn.jsdelivr.net/npm/dompurify@2.4.0/dist/purify.min.js"></script> 
+
+    <script src="script.js"></script> 
+    <script src="ASRRecorder.js" ></script>
+    <script src="Parser.js" ></script>
+    <script src="TTS.js" ></script>
+    
+</body>
+</html>
