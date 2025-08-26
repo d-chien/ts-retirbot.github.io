@@ -26,7 +26,7 @@
             border-radius: 12px;
             box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
             max-width: 600px;
-            width: 100%;
+            width: calc(100% - 40px);
             margin: 0 auto;
         }
 
@@ -52,6 +52,9 @@
         @media (max-width: 768px) {
             .button-group {
                 flex-direction: column;
+            }
+            .container {
+                padding: 20px;
             }
         }
 
