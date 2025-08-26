@@ -5,9 +5,18 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>網站入口</title>
     <style>
+        :root{
+            --primary-red: #e53935;
+            --dark-red: #D70C18;
+            --background-color: #FAFAFA;
+            --card-color: #fFFFFF;
+            --text-color:#333333;
+            --subtext-color:#777777;
+        }
+
         body {
             font-family: 'Inter', Arial, sans-serif;
-            background-color:  #FAFAFA;
+            background-color:  var(--background-color);
             /* 如果要改成圖片，請使用以下註解的程式碼並填入圖片網址
             background-image: url('您的圖片網址.jpg');
             background-size: cover;
@@ -27,6 +36,33 @@
             text-align: center;
         }
 
+        .header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 70px;
+            background-color: var(--background-color);
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            display: flex;
+            align-items: center;
+            padding: 0 20px;
+            box-sizing: border-box;
+            z-index: 100;
+        }
+
+        .header .logo {
+            height: 40px;
+            margin-right: 15px;
+        }
+
+        .header .company-name {
+            color: var(--primary-red); /* 台新藍 */
+            font-size: 1.5em;
+            font-weight: bold;
+            margin: 0;
+        }
+
         .container {
             background-color: #fff;
             padding: 40px 60px;
@@ -35,7 +71,7 @@
             max-width: 600px;
             width: calc(100% - 40px);
             margin: 0 auto;
-            border: 2px solid #e53935; /* 台新紅 */
+            border: 2px solid var(--primary-red); /* 台新紅 */
         }
 
         h1 {
@@ -108,6 +144,11 @@
     </style>
 </head>
 <body>
+    <div class="header">
+        <img src="https://placehold.co/100x40/004d9c/ffffff?text=LOGO" alt="公司標誌" class="logo">
+        <h2 class="company-name">台新人壽</h2>
+    </div>
+
     <div class="container">
         <h1>台新安心退</h1>
         <p>請選擇您想前往的服務</p>
