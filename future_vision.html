@@ -182,44 +182,6 @@
             box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
         }
 
-        /* 加減號按鈕樣式 */
-        .family-counter {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .family-counter button {
-            background-color: var(--primary-red);
-            color: white;
-            border: none;
-            padding: 8px 15px;
-            font-size: 1.2em;
-            cursor: pointer;
-            border-radius: 4px;
-            transition: background-color 0.3s;
-        }
-
-        .family-counter button:hover {
-            background-color: var(--dark-red);
-        }
-
-        #family-count {
-            width: 50px;
-            text-align: center;
-            font-size: 1.2em;
-            margin: 0 10px;
-            border: 1px solid #ccc;
-            border-radius: 4px;
-            padding: 5px;
-            -moz-appearance: textfield; /* 移除 Firefox 的 spinner */
-        }
-        #family-count::-webkit-inner-spin-button, 
-        #family-count::-webkit-outer-spin-button {
-            -webkit-appearance: none;
-            margin: 0;
-        }
-
         /* 最終產生按鈕樣式 */
         .btn-generate {
             background-color: var(--primary-red);
@@ -325,12 +287,25 @@
         const progressImageContainer = document.getElementById('progress-image-container');
 
         // 儲存所有問題和選項
+        // 修改了 questions 陣列，將「家人數量」拆分成「是否有伴侶」和「是否有小孩」
         const questions = [
             {
-                id: 'family',
-                title: '家人數量',
-                type: 'counter',
-                options: null
+                id: 'partner',
+                title: '是否有伴侶',
+                type: 'buttons',
+                options: [
+                    { value: 'yes', text: '有' },
+                    { value: 'no', text: '沒有' }
+                ]
+            },
+            {
+                id: 'children',
+                title: '是否有小孩',
+                type: 'buttons',
+                options: [
+                    { value: 'yes', text: '有' },
+                    { value: 'no', text: '沒有' }
+                ]
             },
             {
                 id: 'pet',
@@ -370,12 +345,14 @@
         const userChoices = {};
 
         // 圖片 URL 陣列，根據進度來選擇
+        // 更新了 progressImages 陣列的長度，以配合新的問題數量
         const progressImages = [
             'https://via.placeholder.com/150x150.png?text=Step+0',
             'https://via.placeholder.com/150x150.png?text=Step+1',
             'https://via.placeholder.com/150x150.png?text=Step+2',
             'https://via.placeholder.com/150x150.png?text=Step+3',
-            'https://via.placeholder.com/150x150.png?text=Step+4'
+            'https://via.placeholder.com/150x150.png?text=Step+4',
+            'https://via.placeholder.com/150x150.png?text=Step+5'
         ];
         
         // 更新進度圖示的函式
@@ -396,16 +373,7 @@
             const currentQuestion = questions[currentQuestionIndex];
             let html = `<h3 class="question-title">${currentQuestion.title}</h3>`;
 
-            if (currentQuestion.type === 'counter') {
-                // 渲染家人數量計數器
-                html += `
-                    <div class="family-counter">
-                        <button id="decrement-btn">-</button>
-                        <input type="text" id="family-count" value="1" readonly>
-                        <button id="increment-btn">+</button>
-                    </div>
-                `;
-            } else if (currentQuestion.type === 'buttons') {
+            if (currentQuestion.type === 'buttons') {
                 // 渲染按鈕選項
                 html += `<ul class="options-grid">`;
                 currentQuestion.options.forEach(option => {
@@ -442,40 +410,6 @@
                         }, 300); // 動畫時間 300ms
                     });
                 });
-            } else if (currentQuestion.type === 'counter') {
-                const familyCountInput = document.getElementById('family-count');
-                const incrementBtn = document.getElementById('increment-btn');
-                const decrementBtn = document.getElementById('decrement-btn');
-
-                // 初始設定家人數量
-                userChoices[currentQuestion.id] = parseInt(familyCountInput.value);
-
-                incrementBtn.addEventListener('click', () => {
-                    let count = parseInt(familyCountInput.value);
-                    familyCountInput.value = count + 1;
-                    userChoices[currentQuestion.id] = parseInt(familyCountInput.value);
-                });
-
-                decrementBtn.addEventListener('click', () => {
-                    let count = parseInt(familyCountInput.value);
-                    if (count > 0) {
-                        familyCountInput.value = count - 1;
-                    }
-                    userChoices[currentQuestion.id] = parseInt(familyCountInput.value);
-                });
-                
-                // 模擬點擊按鈕來進入下一個問題
-                const nextStepButton = document.createElement('button');
-                nextStepButton.textContent = '下一步';
-                nextStepButton.classList.add('option-button');
-                nextStepButton.style.marginTop = '20px';
-                nextStepButton.addEventListener('click', () => {
-                     // 延遲切換，以便看到動畫
-                    setTimeout(() => {
-                        nextQuestion();
-                    }, 300); // 動畫時間 300ms
-                });
-                questionContainer.appendChild(nextStepButton);
             }
             updateProgressImage();
         }
@@ -500,7 +434,7 @@
             
             // 模擬 API 呼叫，2 秒後顯示圖片
             setTimeout(() => {
-                const dummyImageUrl = 'https://via.placeholder.com/500x300.png?text=未來藍圖在此呈現';
+                const dummyImageUrl = 'corgi.jpg';
                 resultImage.src = dummyImageUrl;
                 resultImage.alt = '想像的退休生活圖片';
                 
