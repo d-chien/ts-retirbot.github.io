@@ -96,7 +96,7 @@
         /* 進度圖示區塊，可拖曳 */
         .progress-image-container {
             position: fixed;
-            bottom: 100px;
+            bottom: 50px;
             right: 20px;
             z-index: 99;
             cursor: grab;
@@ -495,11 +495,11 @@
             const clientX = e.type.startsWith('touch') ? e.touches[0].clientX : e.clientX;
             const clientY = e.type.startsWith('touch') ? e.touches[0].clientY : e.clientY;
 
-            const newX = clientX;
-            const newY = clientY;
+            // const newX = clientX;
+            // const newY = clientY;
 
-            // const newX = clientX - startX;
-            // const newY = clientY - startY;
+            const newX = clientX - startX;
+            const newY = clientY - startY;
             
             // const maxX = window.innerWidth - progressImageContainer.offsetWidth;
             // const maxY = window.innerHeight - progressImageContainer.offsetHeight;
