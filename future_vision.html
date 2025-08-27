@@ -399,7 +399,7 @@
                         // 儲存使用者選擇
                         const value = button.dataset.value;
                         userChoices[currentQuestion.id] = value;
-                        consol.log('使用者選擇：',currentQuestion.id, value)
+                        console.log('使用者選擇：',currentQuestion.id, value);
                         
                         // 添加選中樣式
                         questionContainer.querySelectorAll('.option-button').forEach(btn => btn.classList.remove('selected'));
