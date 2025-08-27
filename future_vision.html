@@ -472,58 +472,58 @@
             renderQuestion();
         });
         
-        // 拖曳功能，同時支援滑鼠與觸控
-        let isDragging = false;
-        let startX, startY;
+        // // 拖曳功能，同時支援滑鼠與觸控
+        // let isDragging = false;
+        // let startX, startY;
 
-        // 統一處理拖曳開始事件（滑鼠與觸控）
-        function handleDragStart(e) {
-            isDragging = true;
-            const clientX = e.type.startsWith('touch') ? e.touches[0].clientX : e.clientX;
-            const clientY = e.type.startsWith('touch') ? e.touches[0].clientY : e.clientY;
+        // // 統一處理拖曳開始事件（滑鼠與觸控）
+        // function handleDragStart(e) {
+        //     isDragging = true;
+        //     const clientX = e.type.startsWith('touch') ? e.touches[0].clientX : e.clientX;
+        //     const clientY = e.type.startsWith('touch') ? e.touches[0].clientY : e.clientY;
 
-            startX = clientX - progressImageContainer.offsetLeft;
-            startY = clientY - progressImageContainer.offsetTop;
+        //     startX = clientX - progressImageContainer.offsetLeft;
+        //     startY = clientY - progressImageContainer.offsetTop;
 
-            progressImageContainer.style.cursor = 'grabbing';
-            e.preventDefault(); // 避免觸控事件的預設行為（例如頁面滾動）
-        }
+        //     progressImageContainer.style.cursor = 'grabbing';
+        //     e.preventDefault(); // 避免觸控事件的預設行為（例如頁面滾動）
+        // }
 
-        // 統一處理拖曳中事件（滑鼠與觸控）
-        function handleDragMove(e) {
-            if (!isDragging) return;
-            const clientX = e.type.startsWith('touch') ? e.touches[0].clientX : e.clientX;
-            const clientY = e.type.startsWith('touch') ? e.touches[0].clientY : e.clientY;
+        // // 統一處理拖曳中事件（滑鼠與觸控）
+        // function handleDragMove(e) {
+        //     if (!isDragging) return;
+        //     const clientX = e.type.startsWith('touch') ? e.touches[0].clientX : e.clientX;
+        //     const clientY = e.type.startsWith('touch') ? e.touches[0].clientY : e.clientY;
 
-            // const newX = clientX;
-            // const newY = clientY;
+        //     // const newX = clientX;
+        //     // const newY = clientY;
 
-            const newX = clientX - startX;
-            const newY = clientY - startY;
+        //     const newX = clientX - startX;
+        //     const newY = clientY - startY;
             
-            // const maxX = window.innerWidth - progressImageContainer.offsetWidth;
-            // const maxY = window.innerHeight - progressImageContainer.offsetHeight;
+        //     // const maxX = window.innerWidth - progressImageContainer.offsetWidth;
+        //     // const maxY = window.innerHeight - progressImageContainer.offsetHeight;
 
-            // progressImageContainer.style.left = Math.max(0, Math.min(newX, maxX)) + 'px';
-            // progressImageContainer.style.top = Math.max(0, Math.min(newY, maxY)) + 'px';
-            progressImageContainer.style.left = newX + 'px';
-            progressImageContainer.style.top = newY + 'px';
-        }
+        //     // progressImageContainer.style.left = Math.max(0, Math.min(newX, maxX)) + 'px';
+        //     // progressImageContainer.style.top = Math.max(0, Math.min(newY, maxY)) + 'px';
+        //     progressImageContainer.style.left = newX + 'px';
+        //     progressImageContainer.style.top = newY + 'px';
+        // }
 
-        // 統一處理拖曳結束事件（滑鼠與觸控）
-        function handleDragEnd() {
-            isDragging = false;
-            progressImageContainer.style.cursor = 'grab';
-        }
+        // // 統一處理拖曳結束事件（滑鼠與觸控）
+        // function handleDragEnd() {
+        //     isDragging = false;
+        //     progressImageContainer.style.cursor = 'grab';
+        // }
 
-        // 綁定事件監聽器
-        progressImageContainer.addEventListener('mousedown', handleDragStart);
-        document.addEventListener('mousemove', handleDragMove);
-        document.addEventListener('mouseup', handleDragEnd);
+        // // 綁定事件監聽器
+        // progressImageContainer.addEventListener('mousedown', handleDragStart);
+        // document.addEventListener('mousemove', handleDragMove);
+        // document.addEventListener('mouseup', handleDragEnd);
 
-        progressImageContainer.addEventListener('touchstart', handleDragStart);
-        document.addEventListener('touchmove', handleDragMove);
-        document.addEventListener('touchend', handleDragEnd);
+        // progressImageContainer.addEventListener('touchstart', handleDragStart);
+        // document.addEventListener('touchmove', handleDragMove);
+        // document.addEventListener('touchend', handleDragEnd);
 
     </script>
 </body>
