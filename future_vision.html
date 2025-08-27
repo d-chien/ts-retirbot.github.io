@@ -19,7 +19,7 @@
         body {
             font-family: 'Inter', Arial, sans-serif;
             background-color: var(--background-color);
-            color: #333;
+            color: var(--text-color);
             display: flex;
             flex-direction: column;
             align-items: center;
@@ -61,6 +61,23 @@
             margin: 0;
         }
 
+        /* 返回按鈕樣式 */
+        .back-button {
+            position: absolute;
+            left: 20px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: white;
+            font-size: 2em;
+            text-decoration: none;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+        
+        .back-button:hover {
+            transform: translateY(-50%) scale(1.1);
+        }
+
         .container {
             background-color: var(--card-color);
             padding: 40px 60px;
@@ -72,7 +89,7 @@
         }
 
         h1 {
-            color: var(--dark-red); /* 台新藍 */
+            color: var(--dark-red);
             margin-bottom: 10px;
         }
 
@@ -80,6 +97,28 @@
             color: var(--subtext-color);
             margin-bottom: 30px;
             line-height: 1.6;
+        }
+        
+        /* 進度圖示區塊，改為可拖曳的懸浮圖示 */
+        .progress-image-container {
+            position: fixed;
+            top: 100px; /* 初始位置，避免與 header 重疊 */
+            left: 20px;
+            z-index: 99;
+            cursor: grab; /* 拖曳時的游標樣式 */
+        }
+        
+        #progress-image {
+            width: 150px;
+            height: 150px;
+            transition: transform 0.5s ease-in-out;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+            border-radius: 50%; /* 讓圖示變成圓形 */
+        }
+        
+        /* 當拖曳時游標樣式 */
+        .progress-image-container:active {
+            cursor: grabbing;
         }
 
         .choices {
@@ -97,9 +136,10 @@
 
         .choice-group h3 {
             margin-top: 0;
-            margin-bottom: 10px;
+            margin-bottom: 15px;
             color: var(--primary-red);
             font-size: 1.1em;
+            text-align: center;
         }
 
         /* 加減號按鈕樣式 */
@@ -134,18 +174,43 @@
             padding: 5px;
         }
 
-        .options label {
-            display: block;
-            margin-bottom: 10px;
-            cursor: pointer;
+        /* 項目按鈕化樣式 */
+        .options {
+            display: flex;
+            flex-wrap: wrap; /* 允許換行 */
+            justify-content: center;
+            gap: 10px;
         }
 
+        .options label {
+            flex: 1 1 45%; /* 確保按鈕有彈性，且不會重疊 */
+        }
+
+        .choice-button {
+            display: block;
+            width: 100%;
+            padding: 10px 15px;
+            border: 2px solid #ccc;
+            border-radius: 8px;
+            cursor: pointer;
+            text-align: center;
+            transition: background-color 0.2s, border-color 0.2s;
+        }
+
+        /* 選中狀態 */
+        .options input[type="radio"]:checked + .choice-button {
+            background-color: #fcebeb; /* 淺紅色背景 */
+            border-color: var(--primary-red); /* 紅色邊框 */
+            font-weight: bold;
+        }
+
+        /* 隱藏原生 radio 按鈕 */
         .options input[type="radio"] {
-            margin-right: 8px;
+            display: none;
         }
 
         .btn-generate {
-            background-color: var(--primary-red); /* 台新紅 */
+            background-color: var(--primary-red);
             color: white;
             border: none;
             padding: 15px 30px;
@@ -187,7 +252,7 @@
             width: 15px;
             height: 15px;
             margin: 0 5px;
-            background-color: var(--primary-red); /* 台新紅 */
+            background-color: var(--primary-red);
             border-radius: 50%;
             animation: bounce 0.6s infinite alternate;
         }
@@ -216,17 +281,22 @@
 </head>
 <body>
     <div class="header">
-        <img href="index.html" src="TSLI_RED.png" alt="公司標誌" class="logo" >
-        <!-- <h2 class="company-name">台新人壽</h2> -->
+        <a href="index.html" class="back-button">&lt;</a>
+        <img src="https://via.placeholder.com/40x40.png?text=TS" alt="公司標誌" class="logo">
     </div>
 
     <div class="container">
         <h1>想想退休後的自己</h1>
         <p>快來動動手指，讓台新與你一起想像退休後的生活</p>
+        
+        <!-- 進度圖示區塊，改為可拖曳的懸浮圖示 -->
+        <div class="progress-image-container" id="progress-image-container">
+            <img id="progress-image" src="https://via.placeholder.com/150x150.png?text=Step+0" alt="進度圖示">
+        </div>
 
         <div class="choices">
             <!-- 家人數量 -->
-            <div class="choice-group">
+            <div class="choice-group" data-category="family">
                 <h3>家人數量</h3>
                 <div class="family-counter">
                     <button id="decrement-btn">-</button>
@@ -236,34 +306,67 @@
             </div>
 
             <!-- 寵物 -->
-            <div class="choice-group">
+            <div class="choice-group" data-category="pet">
                 <h3>寵物</h3>
                 <div class="options">
-                    <label><input type="radio" name="pet" value="cat" checked>貓</label>
-                    <label><input type="radio" name="pet" value="dog">狗</label>
-                    <label><input type="radio" name="pet" value="none">沒有寵物</label>
+                    <label>
+                        <input type="radio" name="pet" value="cat" checked>
+                        <span class="choice-button">貓</span>
+                    </label>
+                    <label>
+                        <input type="radio" name="pet" value="dog">
+                        <span class="choice-button">狗</span>
+                    </label>
+                    <label>
+                        <input type="radio" name="pet" value="none">
+                        <span class="choice-button">沒有寵物</span>
+                    </label>
                 </div>
             </div>
             
             <!-- 房屋類型 -->
-            <div class="choice-group">
+            <div class="choice-group" data-category="house">
                 <h3>房屋類型</h3>
                 <div class="options">
-                    <label><input type="radio" name="house" value="apartment" checked>公寓</label>
-                    <label><input type="radio" name="house" value="mansion">豪宅</label>
-                    <label><input type="radio" name="house" value="building">大廈</label>
+                    <label>
+                        <input type="radio" name="house" value="apartment" checked>
+                        <span class="choice-button">公寓</span>
+                    </label>
+                    <label>
+                        <input type="radio" name="house" value="mansion">
+                        <span class="choice-button">豪宅</span>
+                    </label>
+                    <label>
+                        <input type="radio" name="house" value="building">
+                        <span class="choice-button">大廈</span>
+                    </label>
                 </div>
             </div>
 
             <!-- 居住地區 -->
-            <div class="choice-group">
+            <div class="choice-group" data-category="location">
                 <h3>居住地區</h3>
                 <div class="options">
-                    <label><input type="radio" name="location" value="city" checked>市區</label>
-                    <label><input type="radio" name="location" value="suburb">郊區</label>
-                    <label><input type="radio" name="location" value="countryside">鄉村</label>
-                    <label><input type="radio" name="location" value="seaside">海邊</label>
-                    <label><input type="radio" name="location" value="mountain">山上</label>
+                    <label>
+                        <input type="radio" name="location" value="city" checked>
+                        <span class="choice-button">市區</span>
+                    </label>
+                    <label>
+                        <input type="radio" name="location" value="suburb">
+                        <span class="choice-button">郊區</span>
+                    </label>
+                    <label>
+                        <input type="radio" name="location" value="countryside">
+                        <span class="choice-button">鄉村</span>
+                    </label>
+                    <label>
+                        <input type="radio" name="location" value="seaside">
+                        <span class="choice-button">海邊</span>
+                    </label>
+                    <label>
+                        <input type="radio" name="location" value="mountain">
+                        <span class="choice-button">山上</span>
+                    </label>
                 </div>
             </div>
         </div>
@@ -279,46 +382,92 @@
                 <div></div>
             </div>
             <!-- 圖片將在這裡顯示 -->
-            <img id="result-image" alt="想像的退休生活圖片">
+            <img id="result-image" alt="想像的退休生活圖片" class="hidden">
         </div>
     </div>
     <script>
-        // JavaScript 程式碼將在這裡處理互動邏輯
-
-        // 處理家人數量加減
         const familyCountInput = document.getElementById('family-count');
         const incrementBtn = document.getElementById('increment-btn');
         const decrementBtn = document.getElementById('decrement-btn');
+        const generateBtn = document.getElementById('generate-btn');
+        const loadingSpinner = document.getElementById('loading-spinner');
+        const resultImage = document.getElementById('result-image');
+        const progressImageContainer = document.getElementById('progress-image-container');
+        const progressImage = document.getElementById('progress-image');
+        const resultArea = document.getElementById('result-area');
 
+        // 追蹤進度，初始為 0
+        let completedSteps = 0;
+        const totalSteps = 4; // 家人數量、寵物、房屋類型、居住地區
+
+        // 圖片 URL 陣列，根據進度來選擇
+        const progressImages = [
+            'https://via.placeholder.com/150x150.png?text=Step+0',
+            'https://via.placeholder.com/150x150.png?text=Step+1',
+            'https://via.placeholder.com/150x150.png?text=Step+2',
+            'https://via.placeholder.com/150x150.png?text=Step+3',
+            'https://via.placeholder.com/150x150.png?text=Step+4'
+        ];
+
+        // 更新進度圖示的函式
+        function updateProgressImage() {
+            let currentCompleted = 0;
+            
+            if (parseInt(familyCountInput.value) >= 0) {
+                currentCompleted++;
+            }
+
+            if (document.querySelector('input[name="pet"]:checked')) currentCompleted++;
+            if (document.querySelector('input[name="house"]:checked')) currentCompleted++;
+            if (document.querySelector('input[name="location"]:checked')) currentCompleted++;
+            
+            completedSteps = currentCompleted;
+            progressImage.src = progressImages[completedSteps];
+            
+            if (completedSteps === totalSteps) {
+                generateBtn.disabled = false;
+            } else {
+                generateBtn.disabled = true;
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            updateProgressImage();
+        });
+
+        // 監聽家人數量變化
         incrementBtn.addEventListener('click', () => {
             let count = parseInt(familyCountInput.value);
             familyCountInput.value = count + 1;
+            updateProgressImage();
         });
-
         decrementBtn.addEventListener('click', () => {
             let count = parseInt(familyCountInput.value);
             if (count > 0) {
                 familyCountInput.value = count - 1;
             }
+            updateProgressImage();
+        });
+
+        // 監聽所有 radio 按鈕的變化
+        document.querySelectorAll('input[type="radio"]').forEach(radio => {
+            radio.addEventListener('change', updateProgressImage);
         });
 
         // 處理產生未來藍圖按鈕點擊
-        const generateBtn = document.getElementById('generate-btn');
-        const loadingSpinner = document.getElementById('loading-spinner');
-        const resultImage = document.getElementById('result-image');
-
         generateBtn.addEventListener('click', () => {
-            // 點擊後，先顯示載入動畫，並隱藏圖片
             resultImage.classList.add('hidden');
             loadingSpinner.classList.remove('hidden');
-            generateBtn.disabled = true; // 禁用按鈕，避免重複點擊
+            generateBtn.disabled = true;
             
+            // 點擊後隱藏進度圖示
+            progressImageContainer.classList.add('hidden');
+
             const familyCount = familyCountInput.value;
             const pet = document.querySelector('input[name="pet"]:checked').value;
             const house = document.querySelector('input[name="house"]:checked').value;
             const location = document.querySelector('input[name="location"]:checked').value;
             
-            // 這些是您的選擇，您可以將這些資料傳送給 API
             const choices = {
                 familyCount,
                 pet,
@@ -328,19 +477,14 @@
 
             console.log('使用者選擇的要素：', choices);
 
-            // TODO: 在這裡呼叫 API
-            // 這裡只是模擬 API 呼叫的成功，並在 2 秒後顯示圖片
             setTimeout(() => {
                 const dummyImageUrl = 'https://via.placeholder.com/500x300.png?text=未來藍圖在此呈現';
                 resultImage.src = dummyImageUrl;
                 resultImage.alt = '想像的退休生活圖片';
 
-                // 模擬圖片載入完成後，隱藏載入動畫並顯示圖片
                 loadingSpinner.classList.add('hidden');
                 resultImage.classList.remove('hidden');
-                generateBtn.disabled = false; // 啟用按鈕
                 
-                // 顯示提示，但不要使用 alert()
                 const messageBox = document.createElement('div');
                 messageBox.textContent = '未來藍圖已產生！請查看畫面。';
                 messageBox.style.cssText = `
@@ -359,10 +503,40 @@
 
                 setTimeout(() => {
                     messageBox.remove();
-                }, 3000); // 3 秒後移除提示
-                
-            }, 2000); // 模擬 2 秒的 API 延遲
+                }, 3000);
+            }, 2000);
         });
+        
+        // 拖曳功能
+        let isDragging = false;
+        let startX, startY;
+
+        progressImageContainer.addEventListener('mousedown', (e) => {
+            isDragging = true;
+            startX = e.clientX - progressImageContainer.offsetLeft;
+            startY = e.clientY - progressImageContainer.offsetTop;
+            progressImageContainer.style.cursor = 'grabbing';
+        });
+
+        document.addEventListener('mousemove', (e) => {
+            if (!isDragging) return;
+            e.preventDefault();
+            const newX = e.clientX - startX;
+            const newY = e.clientY - startY;
+            
+            // 限制拖曳範圍，確保不會超出畫面
+            const maxX = window.innerWidth - progressImageContainer.offsetWidth;
+            const maxY = window.innerHeight - progressImageContainer.offsetHeight;
+
+            progressImageContainer.style.left = Math.max(0, Math.min(newX, maxX)) + 'px';
+            progressImageContainer.style.top = Math.max(0, Math.min(newY, maxY)) + 'px';
+        });
+
+        document.addEventListener('mouseup', () => {
+            isDragging = false;
+            progressImageContainer.style.cursor = 'grab';
+        });
+
     </script>
 </body>
 </html>
