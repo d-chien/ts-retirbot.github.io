@@ -498,11 +498,13 @@
             const newX = clientX - startX;
             const newY = clientY - startY;
             
-            const maxX = window.innerWidth - progressImageContainer.offsetWidth;
-            const maxY = window.innerHeight - progressImageContainer.offsetHeight;
+            // const maxX = window.innerWidth - progressImageContainer.offsetWidth;
+            // const maxY = window.innerHeight - progressImageContainer.offsetHeight;
 
-            progressImageContainer.style.left = Math.max(0, Math.min(newX, maxX)) + 'px';
-            progressImageContainer.style.top = Math.max(0, Math.min(newY, maxY)) + 'px';
+            // progressImageContainer.style.left = Math.max(0, Math.min(newX, maxX)) + 'px';
+            // progressImageContainer.style.top = Math.max(0, Math.min(newY, maxY)) + 'px';
+            progressImageContainer.style.left = newX + 'px';
+            progressImageContainer.style.top = newY + 'px';
         }
 
         // 統一處理拖曳結束事件（滑鼠與觸控）
