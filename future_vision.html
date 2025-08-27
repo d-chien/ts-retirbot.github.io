@@ -96,8 +96,8 @@
         /* 進度圖示區塊，可拖曳 */
         .progress-image-container {
             position: fixed;
-            top: 100px;
-            left: 20px;
+            bottom: 100px;
+            right: 20px;
             z-index: 99;
             cursor: grab;
         }
@@ -472,19 +472,22 @@
             renderQuestion();
         });
         
-        // 拖曳功能
-        let isDragging = false;
+        // 拖曳功能優化
         let startX, startY;
 
         progressImageContainer.addEventListener('mousedown', (e) => {
-            isDragging = true;
+            // 計算滑鼠點擊位置與元素左上角的偏移量
             startX = e.clientX - progressImageContainer.offsetLeft;
             startY = e.clientY - progressImageContainer.offsetTop;
+
+            // 在滑鼠按下時，直接將 move 事件監聽器綁定到 document
+            // 這樣可以確保即使滑鼠移出元素範圍，拖曳行為也能持續
+            document.addEventListener('mousemove', onMouseMove);
+            
             progressImageContainer.style.cursor = 'grabbing';
         });
 
-        document.addEventListener('mousemove', (e) => {
-            if (!isDragging) return;
+        function onMouseMove(e) {
             e.preventDefault();
             const newX = e.clientX - startX;
             const newY = e.clientY - startY;
@@ -494,10 +497,11 @@
 
             progressImageContainer.style.left = Math.max(0, Math.min(newX, maxX)) + 'px';
             progressImageContainer.style.top = Math.max(0, Math.min(newY, maxY)) + 'px';
-        });
+        }
 
         document.addEventListener('mouseup', () => {
-            isDragging = false;
+            // 在滑鼠放開時，移除 move 事件監聽器
+            document.removeEventListener('mousemove', onMouseMove);
             progressImageContainer.style.cursor = 'grab';
         });
 
