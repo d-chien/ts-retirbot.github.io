@@ -399,6 +399,7 @@
                         // 儲存使用者選擇
                         const value = button.dataset.value;
                         userChoices[currentQuestion.id] = value;
+                        consol.log('使用者選擇：',currentQuestion.id, value)
                         
                         // 添加選中樣式
                         questionContainer.querySelectorAll('.option-button').forEach(btn => btn.classList.remove('selected'));
@@ -434,7 +435,7 @@
             
             // 模擬 API 呼叫，2 秒後顯示圖片
             setTimeout(() => {
-                const dummyImageUrl = 'corgi.jpg';
+                const dummyImageUrl = 'media/corgi.jpg';
                 resultImage.src = dummyImageUrl;
                 resultImage.alt = '想像的退休生活圖片';
                 
