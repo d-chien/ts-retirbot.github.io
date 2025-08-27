@@ -472,25 +472,31 @@
             renderQuestion();
         });
         
-        // 拖曳功能優化
+        // 拖曳功能，同時支援滑鼠與觸控
+        let isDragging = false;
         let startX, startY;
 
-        progressImageContainer.addEventListener('mousedown', (e) => {
-            // 計算滑鼠點擊位置與元素左上角的偏移量
-            startX = e.clientX - progressImageContainer.offsetLeft;
-            startY = e.clientY - progressImageContainer.offsetTop;
+        // 統一處理拖曳開始事件（滑鼠與觸控）
+        function handleDragStart(e) {
+            isDragging = true;
+            const clientX = e.type.startsWith('touch') ? e.touches[0].clientX : e.clientX;
+            const clientY = e.type.startsWith('touch') ? e.touches[0].clientY : e.clientY;
 
-            // 在滑鼠按下時，直接將 move 事件監聽器綁定到 document
-            // 這樣可以確保即使滑鼠移出元素範圍，拖曳行為也能持續
-            document.addEventListener('mousemove', onMouseMove);
-            
+            startX = clientX - progressImageContainer.offsetLeft;
+            startY = clientY - progressImageContainer.offsetTop;
+
             progressImageContainer.style.cursor = 'grabbing';
-        });
+            e.preventDefault(); // 避免觸控事件的預設行為（例如頁面滾動）
+        }
 
-        function onMouseMove(e) {
-            e.preventDefault();
-            const newX = e.clientX - startX;
-            const newY = e.clientY - startY;
+        // 統一處理拖曳中事件（滑鼠與觸控）
+        function handleDragMove(e) {
+            if (!isDragging) return;
+            const clientX = e.type.startsWith('touch') ? e.touches[0].clientX : e.clientX;
+            const clientY = e.type.startsWith('touch') ? e.touches[0].clientY : e.clientY;
+
+            const newX = clientX - startX;
+            const newY = clientY - startY;
             
             const maxX = window.innerWidth - progressImageContainer.offsetWidth;
             const maxY = window.innerHeight - progressImageContainer.offsetHeight;
@@ -499,11 +505,20 @@
             progressImageContainer.style.top = Math.max(0, Math.min(newY, maxY)) + 'px';
         }
 
-        document.addEventListener('mouseup', () => {
-            // 在滑鼠放開時，移除 move 事件監聽器
-            document.removeEventListener('mousemove', onMouseMove);
+        // 統一處理拖曳結束事件（滑鼠與觸控）
+        function handleDragEnd() {
+            isDragging = false;
             progressImageContainer.style.cursor = 'grab';
-        });
+        }
+
+        // 綁定事件監聽器
+        progressImageContainer.addEventListener('mousedown', handleDragStart);
+        document.addEventListener('mousemove', handleDragMove);
+        document.addEventListener('mouseup', handleDragEnd);
+
+        progressImageContainer.addEventListener('touchstart', handleDragStart);
+        document.addEventListener('touchmove', handleDragMove);
+        document.addEventListener('touchend', handleDragEnd);
 
     </script>
 </body>
