@@ -26,6 +26,7 @@
             min-height: 100vh;
             margin: 0;
             padding: 20px;
+            justify-content: center;
             padding-top: 80px; /* 為固定標頭留出空間 */
             box-sizing: border-box;
             text-align: center;
@@ -84,7 +85,7 @@
             border-radius: 12px;
             box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
             max-width: 600px;
-            width: 100%;
+            width: calc(100% - 40px);
             position: relative;
         }
 
@@ -102,8 +103,8 @@
         /* 進度圖示區塊，改為可拖曳的懸浮圖示 */
         .progress-image-container {
             position: fixed;
-            top: 100px; /* 初始位置，避免與 header 重疊 */
-            left: 20px;
+            bottom: 100px; /* 初始位置，避免與 header 重疊 */
+            right: 20px;
             z-index: 99;
             cursor: grab; /* 拖曳時的游標樣式 */
         }
@@ -188,7 +189,7 @@
 
         .choice-button {
             display: block;
-            width: 100%;
+            width: 90%;
             padding: 10px 15px;
             border: 2px solid #ccc;
             border-radius: 8px;
@@ -282,7 +283,7 @@
 <body>
     <div class="header">
         <a href="index.html" class="back-button">&lt;</a>
-        <img src="https://via.placeholder.com/40x40.png?text=TS" alt="公司標誌" class="logo">
+        <img src="TSLI_RED.png" alt="公司標誌" class="logo">
     </div>
 
     <div class="container">
