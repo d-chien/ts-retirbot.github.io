@@ -495,8 +495,11 @@
             const clientX = e.type.startsWith('touch') ? e.touches[0].clientX : e.clientX;
             const clientY = e.type.startsWith('touch') ? e.touches[0].clientY : e.clientY;
 
-            const newX = clientX - startX;
-            const newY = clientY - startY;
+            const newX = clientX;
+            const newY = clientY;
+            
+            // const newX = clientX - startX;
+            // const newY = clientY - startY;
             
             // const maxX = window.innerWidth - progressImageContainer.offsetWidth;
             // const maxY = window.innerHeight - progressImageContainer.offsetHeight;
