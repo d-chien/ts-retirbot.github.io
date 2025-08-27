@@ -102,8 +102,8 @@
         /* 進度圖示區塊，改為可拖曳的懸浮圖示 */
         .progress-image-container {
             position: fixed;
-            top: 100px; /* 初始位置，避免與 header 重疊 */
-            left: 20px;
+            bottom: 100px; /* 初始位置，避免與 header 重疊 */
+            right: 20px;
             z-index: 99;
             cursor: grab; /* 拖曳時的游標樣式 */
         }
@@ -180,14 +180,17 @@
             flex-wrap: wrap; /* 允許換行 */
             justify-content: center; /* 主要改變：按鈕置中 */
             gap: 10px;
-            max-width: 100%; /* 確保容器不會超過父元素 */
+            max-width: 90%; /* 確保容器不會超過父元素 */
         }
 
         .options label {
             /* 調整 flex-basis 以確保換行和間距 */
             flex: 1 1 auto;
-            min-width: calc(45% - 10px); /* 確保最小寬度以容納兩個按鈕 */
+            min-width: calc(30% - 10px); /* 確保最小寬度以容納兩個按鈕 */
             box-sizing: border-box; /* 確保 padding 和 border 不會增加寬度 */
+            display: flex;
+            flex-direction: column;
+            align-items: center;
         }
         
         /* 單一按鈕的特殊排版 */
