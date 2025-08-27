@@ -26,7 +26,6 @@
             min-height: 100vh;
             margin: 0;
             padding: 20px;
-            justify-content: center;
             padding-top: 80px; /* 為固定標頭留出空間 */
             box-sizing: border-box;
             text-align: center;
@@ -85,7 +84,7 @@
             border-radius: 12px;
             box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
             max-width: 600px;
-            width: calc(100% - 40px);
+            width: 100%;
             position: relative;
         }
 
@@ -103,8 +102,8 @@
         /* 進度圖示區塊，改為可拖曳的懸浮圖示 */
         .progress-image-container {
             position: fixed;
-            bottom: 100px; /* 初始位置，避免與 header 重疊 */
-            right: 20px;
+            top: 100px; /* 初始位置，避免與 header 重疊 */
+            left: 20px;
             z-index: 99;
             cursor: grab; /* 拖曳時的游標樣式 */
         }
@@ -179,17 +178,27 @@
         .options {
             display: flex;
             flex-wrap: wrap; /* 允許換行 */
-            justify-content: center;
+            justify-content: center; /* 主要改變：按鈕置中 */
             gap: 10px;
+            max-width: 100%; /* 確保容器不會超過父元素 */
         }
 
         .options label {
-            flex: 1 1 30%; /* 確保按鈕有彈性，且不會重疊 */
+            /* 調整 flex-basis 以確保換行和間距 */
+            flex: 1 1 auto;
+            min-width: calc(45% - 10px); /* 確保最小寬度以容納兩個按鈕 */
+            box-sizing: border-box; /* 確保 padding 和 border 不會增加寬度 */
+        }
+        
+        /* 單一按鈕的特殊排版 */
+        .options.single-row {
+            justify-content: center;
         }
 
+        /* 選項按鈕的實際樣式 */
         .choice-button {
             display: block;
-            width: 90%;
+            width: 100%;
             padding: 10px 15px;
             border: 2px solid #ccc;
             border-radius: 8px;
@@ -434,6 +443,13 @@
 
         document.addEventListener('DOMContentLoaded', () => {
             updateProgressImage();
+            
+            // 檢查每一組選項按鈕的數量，如果不足兩個，就將該選項容器置中
+            document.querySelectorAll('.options').forEach(optionsGroup => {
+                if (optionsGroup.querySelectorAll('label').length < 2) {
+                    optionsGroup.classList.add('single-row');
+                }
+            });
         });
 
         // 監聽家人數量變化
