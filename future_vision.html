@@ -275,6 +275,8 @@
                 <div></div>
             </div>
             <img id="result-image" alt="想像的退休生活圖片" class="hidden">
+            <!-- 新增下載按鈕 -->
+            <a id="download-btn" class="btn-download hidden" href="#" download="未來藍圖.png">下載圖片</a>
         </div>
     </div>
     <script>
@@ -454,6 +456,10 @@
                 setTimeout(() => {
                     resultImage.style.opacity = 1;
                 }, 10);
+
+                // download
+                downloadBtn.classList.remove('hidden');
+                downloadBtn.href = dummyImageUrl;
                 
                 const messageBox = document.createElement('div');
                 messageBox.textContent = '未來藍圖已產生！';
@@ -476,7 +482,26 @@
                 }, 3000);
             })
             .catch(error => {
-                console.error('Error', error);
+                console.error('Fetch error:', error);
+                loadingSpinner.classList.add('hidden');
+                const errorMessage = document.createElement('div');
+                errorMessage.textContent = '產生圖片失敗，請稍後再試。';
+                errorMessage.style.cssText = `
+                    position: fixed;
+                    bottom: 20px;
+                    left: 50%;
+                    transform: translateX(-50%);
+                    background-color: #f44336;
+                    color: white;
+                    padding: 15px 25px;
+                    border-radius: 8px;
+                    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+                    z-index: 1000;
+                `;
+                document.body.appendChild(errorMessage);
+                setTimeout(() => {
+                    errorMessage.remove();
+                }, 5000);
             })
             
             
