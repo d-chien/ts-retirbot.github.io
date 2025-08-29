@@ -432,10 +432,19 @@
             progressImageContainer.classList.add('hidden');
 
             console.log('使用者選擇的要素：', userChoices);
+
             
-            // 模擬 API 呼叫，2 秒後顯示圖片
-            setTimeout(() => {
-                const dummyImageUrl = 'media/corgi.jpg';
+            
+            
+            const response = fetch('https://retibot-247393254326.us-central1.run.app/chat', {
+                method: 'POST',
+                credentials:'include',
+                headers: { 'Content-Type': 'application/json', },
+                body: JSON.stringify(userChoices)
+            })
+            .then(response => response.json())
+            .then(async data => {
+                const dummyImageUrl = data.imagedata;
                 resultImage.src = dummyImageUrl;
                 resultImage.alt = '想像的退休生活圖片';
                 
@@ -465,7 +474,45 @@
                 setTimeout(() => {
                     messageBox.remove();
                 }, 3000);
-            }, 2000);
+            })
+            .catch(error => {
+                console.error('Error', error);
+            })
+            
+            
+            // // 模擬 API 呼叫，2 秒後顯示圖片
+            // setTimeout(() => {
+            //     const dummyImageUrl = 'media/corgi.jpg';
+            //     resultImage.src = dummyImageUrl;
+            //     resultImage.alt = '想像的退休生活圖片';
+                
+            //     loadingSpinner.classList.add('hidden');
+            //     resultImage.classList.remove('hidden');
+            //     resultImage.style.opacity = 0;
+            //     setTimeout(() => {
+            //         resultImage.style.opacity = 1;
+            //     }, 10);
+                
+            //     const messageBox = document.createElement('div');
+            //     messageBox.textContent = '未來藍圖已產生！';
+            //     messageBox.style.cssText = `
+            //         position: fixed;
+            //         bottom: 20px;
+            //         left: 50%;
+            //         transform: translateX(-50%);
+            //         background-color: var(--primary-red);
+            //         color: white;
+            //         padding: 15px 25px;
+            //         border-radius: 8px;
+            //         box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+            //         z-index: 1000;
+            //     `;
+            //     document.body.appendChild(messageBox);
+
+            //     setTimeout(() => {
+            //         messageBox.remove();
+            //     }, 3000);
+            // }, 2000);
         });
 
         document.addEventListener('DOMContentLoaded', () => {
