@@ -206,6 +206,12 @@
             background-color: #FFC107; /* 重新產生按鈕改為黃色 */
             color: #333;
         }
+        .btn-group {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            margin-top: 20px;
+        }
 
         .btn-generate:hover:not(:disabled), 
         .btn-download:hover:not(:disabled),
@@ -269,17 +275,13 @@
         <h1>想想退休後的自己</h1>
         <p>快來動動手指，讓台新與你一起想像退休後的生活</p>
         
-        <!-- 進度圖示區塊，可拖曳 -->
         <div class="progress-image-container" id="progress-image-container">
             <img id="progress-image" src="media/step1.png" alt="進度圖示">
         </div>
 
-        <!-- 核心問答區塊 -->
         <div id="question-container">
-            <!-- 題目和選項將由 JavaScript 動態生成 -->
-        </div>
+            </div>
 
-        <!-- 圖片顯示區域與載入動畫 -->
         <div id="result-area" class="hidden">
             <button class="btn-generate" id="generate-btn">產生未來藍圖</button>
             <div id="loading-spinner" class="loading-spinner hidden">
@@ -288,9 +290,11 @@
                 <div></div>
             </div>
             <img id="result-image" alt="想像的退休生活圖片" class="hidden">
-            <!-- 新增下載按鈕 -->
-            <button id="reset-btn" class="btn-reset">重新產生</button>
-            <button id="download-btn" class="btn-download" href="#" download="未來藍圖.png">下載圖片</a>
+            
+            <div id="action-buttons" class="btn-group hidden">
+                <button id="reset-btn" class="btn-reset">重新產生</button>
+                <button id="download-btn" class="btn-download">下載圖片</button>
+            </div>
         </div>
     </div>
     <script>
@@ -493,7 +497,6 @@
 
                 // 顯示下載和重新產生按鈕
                 actionButtons.classList.remove('hidden');
-                downloadBtn.href = dummyImageUrl;
                 
                 const messageBox = document.createElement('div');
                 messageBox.textContent = '未來藍圖已產生！';
@@ -537,6 +540,19 @@
                     errorMessage.remove();
                 }, 5000);
             })
+        });
+        
+        // 處理下載圖片按鈕點擊
+        downloadBtn.addEventListener('click', () => {
+            const imageUrl = resultImage.src;
+            if (imageUrl) {
+                const link = document.createElement('a');
+                link.href = imageUrl;
+                link.download = '未來藍圖.png';
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+            }
         });
 
         // 處理重新產生按鈕點擊
