@@ -183,7 +183,7 @@
         }
 
         /* 最終產生按鈕樣式 */
-        .btn-generate {
+        .btn-generate, .btn-download, .btn-reset {
             background-color: var(--primary-red);
             color: white;
             border: none;
@@ -194,9 +194,22 @@
             cursor: pointer;
             transition: background-color 0.3s;
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            text-decoration: none; /* 移除超連結底線 */
+            display: inline-block; /* 讓下載按鈕能夠與其他按鈕並排 */
+        }
+        
+        .btn-download, .btn-reset {
+            background-color: #4CAF50; /* 下載按鈕改為綠色 */
         }
 
-        .btn-generate:hover:not(:disabled) {
+        .btn-reset {
+            background-color: #FFC107; /* 重新產生按鈕改為黃色 */
+            color: #333;
+        }
+
+        .btn-generate:hover:not(:disabled), 
+        .btn-download:hover:not(:disabled),
+        .btn-reset:hover:not(:disabled) {
             background-color: var(--dark-red);
         }
 
@@ -276,7 +289,8 @@
             </div>
             <img id="result-image" alt="想像的退休生活圖片" class="hidden">
             <!-- 新增下載按鈕 -->
-            <a id="download-btn" class="btn-download hidden" href="#" download="未來藍圖.png">下載圖片</a>
+            <button id="reset-btn" class="btn-reset">重新產生</button>
+            <button id="download-btn" class="btn-download" href="#" download="未來藍圖.png">下載圖片</a>
         </div>
     </div>
     <script>
@@ -288,6 +302,8 @@
         const progressImage = document.getElementById('progress-image');
         const progressImageContainer = document.getElementById('progress-image-container');
         const downloadBtn = document.getElementById('download-btn');
+        const resetBtn = document.getElementById('reset-btn');
+        const actionButtons = document.getElementById('action-buttons');
 
         // 儲存所有問題和選項
         // 修改了 questions 陣列，將「家人數量」拆分成「是否有伴侶」和「是否有小孩」
@@ -363,6 +379,26 @@
             progressImage.src = progressImages[currentQuestionIndex];
         }
 
+        // 重設頁面的函式
+        function resetPage() {
+            // 重設變數
+            currentQuestionIndex = 0;
+            for (const key in userChoices) {
+                delete userChoices[key];
+            }
+            
+            // 隱藏結果區，顯示問答區
+            resultArea.classList.add('hidden');
+            questionContainer.classList.remove('hidden');
+            generateBtn.classList.remove('hidden');
+            progressImageContainer.classList.remove('hidden');
+            actionButtons.classList.add('hidden');
+            resultImage.classList.add('hidden');
+
+            // 重新渲染第一個問題
+            renderQuestion();
+        }
+
         // 渲染當前問題的函式
         function renderQuestion() {
             if (currentQuestionIndex >= questions.length) {
@@ -435,9 +471,6 @@
             progressImageContainer.classList.add('hidden');
 
             console.log('使用者選擇的要素：', userChoices);
-
-            
-            
             
             const response = fetch('https://retibot-247393254326.us-central1.run.app/imagen', {
                 method: 'POST',
@@ -458,8 +491,8 @@
                     resultImage.style.opacity = 1;
                 }, 10);
 
-                // download
-                downloadBtn.classList.remove('hidden');
+                // 顯示下載和重新產生按鈕
+                actionButtons.classList.remove('hidden');
                 downloadBtn.href = dummyImageUrl;
                 
                 const messageBox = document.createElement('div');
@@ -504,100 +537,15 @@
                     errorMessage.remove();
                 }, 5000);
             })
-            
-            
-            // // 模擬 API 呼叫，2 秒後顯示圖片
-            // setTimeout(() => {
-            //     const dummyImageUrl = 'media/corgi.jpg';
-            //     resultImage.src = dummyImageUrl;
-            //     resultImage.alt = '想像的退休生活圖片';
-                
-            //     loadingSpinner.classList.add('hidden');
-            //     resultImage.classList.remove('hidden');
-            //     resultImage.style.opacity = 0;
-            //     setTimeout(() => {
-            //         resultImage.style.opacity = 1;
-            //     }, 10);
-                
-            //     const messageBox = document.createElement('div');
-            //     messageBox.textContent = '未來藍圖已產生！';
-            //     messageBox.style.cssText = `
-            //         position: fixed;
-            //         bottom: 20px;
-            //         left: 50%;
-            //         transform: translateX(-50%);
-            //         background-color: var(--primary-red);
-            //         color: white;
-            //         padding: 15px 25px;
-            //         border-radius: 8px;
-            //         box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
-            //         z-index: 1000;
-            //     `;
-            //     document.body.appendChild(messageBox);
-
-            //     setTimeout(() => {
-            //         messageBox.remove();
-            //     }, 3000);
-            // }, 2000);
         });
+
+        // 處理重新產生按鈕點擊
+        resetBtn.addEventListener('click', resetPage);
+
 
         document.addEventListener('DOMContentLoaded', () => {
             renderQuestion();
         });
-        
-        // // 拖曳功能，同時支援滑鼠與觸控
-        // let isDragging = false;
-        // let startX, startY;
-
-        // // 統一處理拖曳開始事件（滑鼠與觸控）
-        // function handleDragStart(e) {
-        //     isDragging = true;
-        //     const clientX = e.type.startsWith('touch') ? e.touches[0].clientX : e.clientX;
-        //     const clientY = e.type.startsWith('touch') ? e.touches[0].clientY : e.clientY;
-
-        //     startX = clientX - progressImageContainer.offsetLeft;
-        //     startY = clientY - progressImageContainer.offsetTop;
-
-        //     progressImageContainer.style.cursor = 'grabbing';
-        //     e.preventDefault(); // 避免觸控事件的預設行為（例如頁面滾動）
-        // }
-
-        // // 統一處理拖曳中事件（滑鼠與觸控）
-        // function handleDragMove(e) {
-        //     if (!isDragging) return;
-        //     const clientX = e.type.startsWith('touch') ? e.touches[0].clientX : e.clientX;
-        //     const clientY = e.type.startsWith('touch') ? e.touches[0].clientY : e.clientY;
-
-        //     // const newX = clientX;
-        //     // const newY = clientY;
-
-        //     const newX = clientX - startX;
-        //     const newY = clientY - startY;
-            
-        //     // const maxX = window.innerWidth - progressImageContainer.offsetWidth;
-        //     // const maxY = window.innerHeight - progressImageContainer.offsetHeight;
-
-        //     // progressImageContainer.style.left = Math.max(0, Math.min(newX, maxX)) + 'px';
-        //     // progressImageContainer.style.top = Math.max(0, Math.min(newY, maxY)) + 'px';
-        //     progressImageContainer.style.left = newX + 'px';
-        //     progressImageContainer.style.top = newY + 'px';
-        // }
-
-        // // 統一處理拖曳結束事件（滑鼠與觸控）
-        // function handleDragEnd() {
-        //     isDragging = false;
-        //     progressImageContainer.style.cursor = 'grab';
-        // }
-
-        // // 綁定事件監聽器
-        // progressImageContainer.addEventListener('mousedown', handleDragStart);
-        // document.addEventListener('mousemove', handleDragMove);
-        // document.addEventListener('mouseup', handleDragEnd);
-
-        // progressImageContainer.addEventListener('touchstart', handleDragStart);
-        // document.addEventListener('touchmove', handleDragMove);
-        // document.addEventListener('touchend', handleDragEnd);
-
     </script>
 </body>
 </html>
