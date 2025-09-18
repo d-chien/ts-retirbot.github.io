@@ -10,8 +10,8 @@ body{
     margin: 0;
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     background-color: var(--background-color);
-    display: flex;
-    flex-direction: column;
+    /* display: flex; */
+    /* flex-direction: column; */
     height: 100vh;
 }
 
@@ -20,8 +20,11 @@ body{
     height: 70px;
     background: var(--dark-red);
     display: flex;
-    justify-content: center;
+    /* justify-content: center; */
+    justify-content: space-between;
     align-items: center;
+    padding: 0 20px;
+    box-sizing: border-box;
 }
 .banner.bottom-banner{
     height: 20px;
@@ -310,18 +313,14 @@ html,body{
     width: 100%;
 }
 
-.back-button {
-    position: absolute;
-    left: 20px;
-    top: 20px;
-    transform: translateY(-50%);
+.back-button, .contactus {
     color: white;
     font-size: 2em;
     text-decoration: none;
     cursor: pointer;
     transition: transform 0.2s;
 }
-
+/* 
 .contactus {
     position: absolute;
     right: 20px;
@@ -332,7 +331,7 @@ html,body{
     text-decoration: none;
     cursor: pointer;
     transition: transform 0.2s;
-}
+} */
 
 .back-button, .contactus:hover {
     transform: translateY(-50%) scale(1.1);
