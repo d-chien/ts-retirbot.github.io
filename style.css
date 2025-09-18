@@ -309,3 +309,19 @@ html,body{
     align-items: center;
     width: 100%;
 }
+
+.back-button, .contactus {
+    position: absolute;
+    left: 20px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: white;
+    font-size: 2em;
+    text-decoration: none;
+    cursor: pointer;
+    transition: transform 0.2s;
+}
+
+.back-button, .contactus:hover {
+    transform: translateY(-50%) scale(1.1);
+}
