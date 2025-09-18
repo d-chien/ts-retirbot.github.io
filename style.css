@@ -333,6 +333,6 @@ html,body{
     transition: transform 0.2s;
 } */
 
-.back-button, .contactus:hover {
+/* .back-button, .contactus:hover {
     transform: translateY(-50%) scale(1.1);
-}
+} */
