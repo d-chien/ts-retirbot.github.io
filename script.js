@@ -758,6 +758,7 @@ function handleChangeRecordFile() {
 
 // 這個函式會在點擊「確定」按鈕時執行
 function hideBanner() {
+    console.log('Hide banner')
     const cookieBanner = document.getElementById('cookie-banner');
     if (cookieBanner) {
         cookieBanner.style.display = 'none';

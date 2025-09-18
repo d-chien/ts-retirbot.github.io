@@ -175,34 +175,34 @@ main{
 }
 
 .voice-settings {
-    padding: 10px;
-    background-color: #f0f0f0;
-    border: 1px solid #ddd;
-    border-radius: 8px;
-    margin: 10px 0;
-    display: flex;
-    flex-direction: column;
+    padding: 10px;
+    background-color: #f0f0f0;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    margin: 10px 0;
+    display: flex;
+    flex-direction: column;
 }
 .voice-settings label {
-    margin-right: 5px;
+    margin-right: 5px;
     margin-left: 5px;
-    color: var(--text-color);
-    font-size: 16px;
-    margin-bottom: 5px;
+    color: var(--text-color);
+    font-size: 16px;
+    margin-bottom: 5px;
 }
 
 .voice-settings select, .voice-settings input {
-    padding: 10px;
-    border: 1px solid #ccc;
-    border-radius: 20px;
-    outline: none;
-    font-size: 16px;
-    margin-bottom: 10px;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 20px;
+    outline: none;
+    font-size: 16px;
+    margin-bottom: 10px;
 }
 .voice-settings input[type="checkbox"] {
-    width: 20px;
-    height: 20px;
-    margin-right: 10px;
+    width: 20px;
+    height: 20px;
+    margin-right: 10px;
 }
 
 
