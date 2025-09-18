@@ -313,7 +313,7 @@ html,body{
 .back-button {
     position: absolute;
     left: 20px;
-    top: 50%;
+    top: 10px;
     transform: translateY(-50%);
     color: white;
     font-size: 2em;
@@ -325,7 +325,7 @@ html,body{
 .contactus {
     position: absolute;
     right: 20px;
-    top: 50%;
+    top: 10px;
     transform: translateY(-50%);
     color: white;
     font-size: 2em;
