@@ -320,6 +320,10 @@ html,body{
     cursor: pointer;
     transition: transform 0.2s;
 }
+
+.contactus {
+    font-size: 1em;
+}
 /* 
 .contactus {
     position: absolute;
