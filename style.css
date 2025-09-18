@@ -310,7 +310,7 @@ html,body{
     width: 100%;
 }
 
-.back-button {
+.banner.back-button {
     position: absolute;
     left: 20px;
     top: 50%;
@@ -322,7 +322,7 @@ html,body{
     transition: transform 0.2s;
 }
 
-.contactus {
+.banner.contactus {
     position: absolute;
     right: 20px;
     top: 50%;
@@ -334,6 +334,6 @@ html,body{
     transition: transform 0.2s;
 }
 
-.back-button, .contactus:hover {
+.banner.back-button, .banner.contactus:hover {
     transform: translateY(-50%) scale(1.1);
 }
