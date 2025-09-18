@@ -310,9 +310,21 @@ html,body{
     width: 100%;
 }
 
-.back-button, .contactus {
+.back-button {
     position: absolute;
     left: 20px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: white;
+    font-size: 2em;
+    text-decoration: none;
+    cursor: pointer;
+    transition: transform 0.2s;
+}
+
+.contactus {
+    position: absolute;
+    right: 20px;
     top: 50%;
     transform: translateY(-50%);
     color: white;
