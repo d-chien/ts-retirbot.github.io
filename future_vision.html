@@ -183,7 +183,7 @@
         }
 
         /* 最終產生按鈕樣式 */
-        .btn-generate, .btn-download, .btn-reset {
+        .btn-generate, .btn-download, .btn-reset, .btn-chatbot {
             background-color: var(--primary-red);
             color: white;
             border: none;
@@ -204,7 +204,6 @@
 
         .btn-reset {
             background-color: var(--subtext-color); /* 重新產生按鈕改為黃色 */
-            color: #333;
         }
         .btn-group {
             display: flex;
@@ -215,6 +214,7 @@
 
         .btn-generate:hover:not(:disabled), 
         .btn-download:hover:not(:disabled),
+        .btn-chatbot:hover:not(:disabled),
         .btn-reset:hover:not(:disabled) {
             background-color: var(--dark-red);
         }
@@ -294,6 +294,7 @@
             <div id="action-buttons" class="btn-group hidden">
                 <button id="reset-btn" class="btn-reset">重新產生</button>
                 <button id="download-btn" class="btn-download">下載圖片</button>
+                <button id="chatbot-btn" class="btn-chatbot" href="chatbot.html">聊聊您的退休規劃</button>
             </div>
         </div>
     </div>
