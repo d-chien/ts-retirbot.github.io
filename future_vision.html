@@ -471,6 +471,91 @@
             }, 500); // 500ms 等待淡出動畫結束
         }
 
+        BACKEND_FLASK_URL = 'https://retibot-247393254326.us-central1.run.app'
+        class CsrfManager {
+            constructor() {
+                this.csrfToken = null;
+                this.isFetchingToken = false; // 防止重複獲取
+            }
+
+            async fetchCsrfToken() {
+                const allowedHost = "cms.st.taishinlife.com.tw";
+                if (location.protocal !== 'https:' && location.hostname === allowedHost) {
+                    const safeUrl = 'https://'  + location.host + location.pathname;
+                }
+
+                if (this.csrfToken && !this.isFetchingToken) {
+                    // 如果已經有 token 且沒有在獲取中，則直接返回
+                    return this.csrfToken;
+                }
+                if (this.isFetchingToken) {
+                    // 如果正在獲取中，等待獲取完成
+                    return new Promise(resolve => {
+                        const checkInterval = setInterval(() => {
+                            if (!this.isFetchingToken && this.csrfToken) {
+                                clearInterval(checkInterval);
+                                resolve(this.csrfToken);
+                            }
+                        }, 100);
+                    });
+                }
+
+                this.isFetchingToken = true;
+
+                // 取得CSRF token
+                return new Promise((resolve, reject) => {
+                    const xhttp = new XMLHttpRequest();
+                    xhttp.withCredentials = true;
+
+                    xhttp.onreadystatechange = () => {
+                        if (xhttp.readyState === 4) {
+                            this.isFetchingToken = false;
+
+                            if (xhttp.status === 200) {
+                                try {
+                                    const data = JSON.parse(xhttp.responseText);
+                                    if (data.csrf_token) {
+                                        this.csrfToken = data.csrf_token;
+                                        console.log('CSRF Token 獲取成功', this.csrfToken);
+                                        resolve(this.csrfToken);
+                                    } else {
+                                        console.warn("CSRF Token 不存在");
+                                        reject("CSRF token missing");
+                                    }
+                                } catch (err) {
+                                    reject("CSRF token parse failed: " + err);
+                                }
+                            } else {
+                                reject("csrf token fetch failed: " + xhttp.status);
+                            }
+                        }
+                    };
+
+                    try {
+                        // env
+                        // xhttp.open("POST", "/retirebot/want_csrft",true);
+                        xhttp.open("POST",`${BACKEND_FLASK_URL}/want_csrft`,true);
+                        xhttp.setRequestHeader("Accept", "application/json");
+                        xhttp.send(JSON.stringify({}));
+                    } catch (e) {
+                        this.isFetchingToken = false;
+                        reject("CSRF token fetch error: " + e);
+                    }
+                })
+            }
+            getCsrfHeaders() {
+                if (!this.csrfToken) {
+                    console.warn("CSRF token is not available. Please ensure fetchCsrfToken() was called and successful.");
+                    // 在嚴格模式下，這裡可以拋出錯誤，阻止未受保護的請求
+                    // throw new Error("CSRF token missing.");
+                    return {};
+                }
+                return {
+                    "X-CSRFToken": this.csrfToken,
+                };
+            }
+        }
+        
         async function generatePic(data) {
             try {
                 const xhttp = new XMLHttpRequest();
@@ -597,7 +682,7 @@
                 try {
                     // env
                     xhttp.open('POST','/retirebot/imagen', true);
-                    xhttp.open("POST","${BACKEND_FLASK_URL}/imagen",true);
+                    xhttp.open("POST",`${BACKEND_FLASK_URL}/imagen`,true);
 
                     xhttp.setRequestHeader('Content-Type',"application/json");
 
