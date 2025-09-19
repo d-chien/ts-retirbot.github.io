@@ -205,13 +205,14 @@ document.addEventListener('DOMContentLoaded', async () => {
     // recordButton.textContent = "初始化中...";
 
     // 處理 session 初始化
-    const sessionId = await initSession();
-    if (sessionId) {
-        console.log("Session 已初始化，sessionId:", sessionId);
-        sessionId_A = DOMPurify.sanitize(sessionId);
-    } else {
-        console.error("Session 初始化失敗");
-    }
+    await initSession();
+    // const sessionId = await initSession();
+    // if (sessionId) {
+    //     console.log("Session 已初始化，sessionId:", sessionId);
+    //     sessionId_A = DOMPurify.sanitize(sessionId);
+    // } else {
+    //     console.error("Session 初始化失敗");
+    // }
 
     // 確保 handleInit 在憑證獲取後執行
     // async function setupSTT() {
