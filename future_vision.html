@@ -566,7 +566,7 @@
 
         const csrfManager = new CsrfManager();
         try {
-            const fetchCsrfToken = await csrfManager.fetchCsrfToken();
+            const fetchCsrfToken = csrfManager.fetchCsrfToken();
             console.log('CSRF token ready: ' + fetchCsrfToken);
         } catch (error) {
             console.error('無法獲取Token: ', error);
