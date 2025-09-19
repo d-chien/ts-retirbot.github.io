@@ -400,7 +400,7 @@ async function initSession() {
 
         const csrfHeaders = csrfManager.getCsrfHeaders();
         for (const header in csrfHeaders) {
-            xhttp.setRequestHeader(header, csrfHeaders[headers]);
+            xhttp.setRequestHeader(header, csrfHeaders[header]);
         }
 
         xhttp.send(JSON.stringify({}));
