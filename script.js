@@ -562,6 +562,7 @@ async function sendMessage() {
             session_id: sessionId_A,
             message: text
         };
+        console.log(payload);
 
         xhttp.send(JSON.stringify(payload));
 
