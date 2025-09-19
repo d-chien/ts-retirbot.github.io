@@ -555,6 +555,8 @@
                 };
             }
         }
+
+        const csrfManager = new CsrfManager();
         
         async function generatePic(data) {
             try {
@@ -686,7 +688,7 @@
 
                     xhttp.setRequestHeader('Content-Type',"application/json");
 
-                    const csrfHeaders = CsrfManager.getCsrfHeaders();
+                    const csrfHeaders = csrfManager.getCsrfHeaders();
                     for (const header in csrfHeaders) {
                         xhttp.setRequestHeader(header, csrfHeaders[headers]);
                     }
