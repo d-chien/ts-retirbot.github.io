@@ -662,19 +662,30 @@ function appendMessage(sender, text) {
 
     const customRenderer = new marked.Renderer();
     customRenderer.link = function (href, title, text) {
-        let html = `<a href="${href}"`;
+        let safeHref = href;
+        let safeText = text;
+        
+        if (typeof href === 'object' && href !== null) {
+            safeHref = href.href || '';
+            safeText = href.text || text || '';
+        }
+
+        let html = `<a href="${safeHref}"`;
         if (title) {
             html += ` title "${title}"`;
         }
-        html += ` target="_blank" rel="noopener noreferrer">${text}</a>`;
+        html += ` target="_blank" rel="noopener noreferrer">${safeText}</a>`;
         return html;
     }
 
     marked.setOptions({
         renderer: customRenderer,
-        breaks: true
+        breaks: true,
+        gfm: true
     })
 
+    console.log(`safeText: ${safeText}`);
+    
     message.className = `message ${sender}`;
     if (sender === 'bot') {
         const avatar = document.createElement('div');
