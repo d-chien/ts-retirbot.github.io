@@ -686,7 +686,7 @@
 
                     xhttp.setRequestHeader('Content-Type',"application/json");
 
-                    const csrfHeaders = csrfManager.getCsrfHeaders();
+                    const csrfHeaders = CsrfManager.getCsrfHeaders();
                     for (const header in csrfHeaders) {
                         xhttp.setRequestHeader(header, csrfHeaders[headers]);
                     }
