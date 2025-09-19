@@ -688,7 +688,7 @@ function appendMessage(sender, text) {
 
         // bubble.innerHTML = sanitizedHTML;
         // message.appendChild(bubble);
-        const bubble = ducument.createElement('div');
+        const bubble = document.createElement('div');
         bubble.className = ' bubble';
         bubble.innerHTML = cleanHtml;
         message.appendChild(bubble);
