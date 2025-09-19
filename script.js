@@ -394,7 +394,7 @@ async function initSession() {
 
         //env
         // xhttp.open('POST','/retirebot/init', true);
-        xhttp.open("POST","${BACKEND_FLASK_URL}/init",true);
+        xhttp.open("POST",`${BACKEND_FLASK_URL}/init`,true);
 
         xhttp.setRequestHeader('Content-Type',"application/json");
 
@@ -546,7 +546,7 @@ async function sendMessage() {
 
         // env
         // xhttp.open('POST','/retirebot/chat',true);
-        xhttp.open("POST","${BACKEND_FLASK_URL}/want_csrft",true);
+        xhttp.open("POST",`${BACKEND_FLASK_URL}/want_csrft`,true);
         xhttp.setRequestHeader('Content-Type',"application/json");
 
         const csrfHeaders = await csrfManager.getCsrfHeaders();
@@ -764,7 +764,7 @@ async function generatePDF(data) {
         try {
             // env
             // xhttp.open("POST", "/retirebot/genpdf",true);
-            xhttp.open("POST","${BACKEND_FLASK_URL}/genpdf",true);
+            xhttp.open("POST",`${BACKEND_FLASK_URL}/genpdf`,true);
             xhttp.setRequestHeader("Accept", "application/json");
 
             const csrfHeaders = csrfManager.getCsrfHeaders();
