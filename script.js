@@ -553,7 +553,7 @@ async function sendMessage() {
 
         // env
         // xhttp.open('POST','/retirebot/chat',true);
-        xhttp.open("POST",`${BACKEND_FLASK_URL}/want_csrft`,true);
+        xhttp.open("POST",`${BACKEND_FLASK_URL}/chat`,true);
         xhttp.setRequestHeader('Content-Type',"application/json");
 
         const csrfHeaders = csrfManager.getCsrfHeaders();
