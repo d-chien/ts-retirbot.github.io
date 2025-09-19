@@ -766,7 +766,7 @@ async function generatePDF(data) {
                     if (this.status === 200) {
                         const pdfUrl = pdfdata.url;
                         if (pdfUrl) {
-                            appendMessage(pdfUrl);
+                            appendPDFMessage(pdfUrl);
                             resolve();
                         } else {
                             console.error('fail to retrieve PDF link', pdfdata);
