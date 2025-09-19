@@ -789,7 +789,7 @@ async function generatePDF(data) {
 
             const csrfHeaders = csrfManager.getCsrfHeaders();
             for (const header in csrfHeaders) {
-                xhttp.setRequestHeader(header, csrfHeaders(header));
+                xhttp.setRequestHeader(header, csrfHeaders[header]);
             }
 
             const payload = {
