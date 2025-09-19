@@ -465,8 +465,10 @@ function saveLanguage() {
 
 const chat = document.getElementById('chat');
 async function sendMessage() {
+    
     const input = document.getElementById('textInput');
     const text = DOMPurify.sanitize(input.value.trim());
+    console.log('user:', text);
     if (text === '') return;
 
     if (text.length>300) {
@@ -475,7 +477,7 @@ async function sendMessage() {
     };
 
     appendMessage('user', text);
-    console.log('user: ',text)
+    console.log('user: ',text);
     input.value = '';
 
     appendLoading();
