@@ -487,12 +487,15 @@ async function sendMessage() {
         xhttp.withCredentials = true;
 
         xhttp.onreadystatechange = function () {
+            console.log('state', this.readyState);
             if (this.readyState === 4) {
                 removeLoading();
 
                 try{
                     const data = JSON.parse(this.responseText);
+                    console.log('status: ', this.status);
                     if (this.status === 200) {
+                        console.log(data.response);
                         appendMessage('bot',DOMPurify.sanitize(data.response));
 
                         // const TTS_TW = new TTS();
