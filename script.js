@@ -379,7 +379,7 @@ async function initSession() {
                     const result = JSON.parse(this.responseText);
                     if (this.status === 200) {
                         console.log(result);
-                        appendMessage('bot',result.responseText);
+                        appendMessage('bot',result.response);
                         sessionId_A = DOMPurify.sanitize(result.session_id);
                     } else {
                         console.error('init conversation failed: ', result);
