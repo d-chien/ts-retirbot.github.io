@@ -785,7 +785,7 @@ async function generatePDF(data) {
             // env
             // xhttp.open("POST", "/retirebot/genpdf",true);
             xhttp.open("POST",`${BACKEND_FLASK_URL}/genpdf`,true);
-            xhttp.setRequestHeader("Accept", "application/json");
+            xhttp.setRequestHeader("Content-Type", "application/json");
 
             const csrfHeaders = csrfManager.getCsrfHeaders();
             for (const header in csrfHeaders) {
