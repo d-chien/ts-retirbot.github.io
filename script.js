@@ -97,7 +97,7 @@ class CsrfManager {
         try {
             // env
             // xhttp.open("POST", "/retirebot/want_csrft",true);
-            xhttp.open("POST","${BACKEND_FLASK_URL}/want_csrft",true);
+            xhttp.open("POST",`${BACKEND_FLASK_URL}/want_csrft`,true);
             xhttp.setRequestHeader("Accept", "application/json");
             xhttp.send(JSON.stringify({}));
         } catch (e) {
@@ -684,7 +684,7 @@ function appendMessage(sender, text) {
         // bubble.className = ' bubble';
         
         const rawHtml = marked.parse(text);
-        const cleanHtml = DOMPurify.sanitize(unsafeHTML);
+        const cleanHtml = DOMPurify.sanitize(rawHtml);
 
         // bubble.innerHTML = sanitizedHTML;
         // message.appendChild(bubble);
