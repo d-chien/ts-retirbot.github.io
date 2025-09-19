@@ -538,6 +538,7 @@
                     };
 
                     try {
+                        console.log('start fetching token...')
                         // env
                         // xhttp.open("POST", "/retirebot/want_csrft",true);
                         xhttp.open("POST",`${BACKEND_FLASK_URL}/want_csrft`,true);
@@ -550,6 +551,7 @@
                 })
             }
             getCsrfHeaders() {
+                console.log('Token: ', this.csrfToken);
                 if (!this.csrfToken) {
                     console.warn("CSRF token is not available. Please ensure fetchCsrfToken() was called and successful.");
                     // 在嚴格模式下，這裡可以拋出錯誤，阻止未受保護的請求
@@ -563,6 +565,12 @@
         }
 
         const csrfManager = new CsrfManager();
+        try {
+            const fetchCsrfToken = await csrfManager.fetchCsrfToken();
+            console.log('CSRF token ready: ' + fetchCsrfToken);
+        } catch (error) {
+            console.error('無法獲取Token: ', error);
+        }
         
         async function generatePic(data) {
             try {
