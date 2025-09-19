@@ -665,6 +665,7 @@ function appendMessage(sender, text) {
     customRenderer.link = function (href, title, text) {
         let safeHref = href;
         let safeText = text;
+        console.log(`safeText: ${safeText}`);
         
         if (typeof href === 'object' && href !== null) {
             safeHref = href.href || '';
@@ -685,7 +686,7 @@ function appendMessage(sender, text) {
         gfm: true
     })
 
-    console.log(`safeText: ${safeText}`);
+    console.log(text);
 
     message.className = `message ${sender}`;
     if (sender === 'bot') {
