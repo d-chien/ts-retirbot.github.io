@@ -475,6 +475,7 @@ async function sendMessage() {
     };
 
     appendMessage('user', text);
+    console.log('user: ',text)
     input.value = '';
 
     appendLoading();
@@ -550,7 +551,7 @@ async function sendMessage() {
         xhttp.open("POST",`${BACKEND_FLASK_URL}/want_csrft`,true);
         xhttp.setRequestHeader('Content-Type',"application/json");
 
-        const csrfHeaders = await csrfManager.getCsrfHeaders();
+        const csrfHeaders = csrfManager.getCsrfHeaders();
         for (const header in csrfHeaders) {
             xhttp.setRequestHeader(header, csrfHeaders[header]);
         }
@@ -685,7 +686,7 @@ function appendMessage(sender, text) {
     })
 
     console.log(`safeText: ${safeText}`);
-    
+
     message.className = `message ${sender}`;
     if (sender === 'bot') {
         const avatar = document.createElement('div');
