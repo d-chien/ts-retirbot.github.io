@@ -570,13 +570,13 @@
 
                             if (this.status === 200) {
                                 // const imgUrl = picdata.imagedata;
-                                const dummyImageUrl = data.imagedata;
+                                const dummyImageUrl = picdata.imagedata;
 
                                 if (dummyImageUrl) {
                                     console.log('IMG url get');
                                     // return imgUrl;
                                 } else {
-                                    console.error('fail to get imagedata from response.', imgUrl);
+                                    console.error('fail to get imagedata from response.', dummyImageUrl);
                                     console.error('Fetch error:', error);
                                     loadingSpinner.classList.add('hidden');
                                     const errorMessage = document.createElement('div');
