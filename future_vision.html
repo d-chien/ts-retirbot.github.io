@@ -471,7 +471,10 @@
             }, 500); // 500ms 等待淡出動畫結束
         }
 
-        BACKEND_FLASK_URL = 'https://retibot-247393254326.us-central1.run.app'
+        //env
+        // const BACKEND_FLASK_URL = 'https://127.0.0.1:8080';
+        const BACKEND_FLASK_URL = 'https://retibot-247393254326.us-central1.run.app';
+
         class CsrfManager {
             constructor() {
                 this.csrfToken = null;
@@ -479,7 +482,10 @@
             }
 
             async fetchCsrfToken() {
-                const allowedHost = "cms.st.taishinlife.com.tw";
+                // env
+                // const allowedHost = "cms.st.taishinlife.com.tw";
+                const allowedHost = 'd-chien.github.io';
+                console.log('allowed host; ', allowedHost);
                 if (location.protocal !== 'https:' && location.hostname === allowedHost) {
                     const safeUrl = 'https://'  + location.host + location.pathname;
                 }
