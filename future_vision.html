@@ -349,7 +349,9 @@
                 options: [
                     { value: 'apartment', text: '公寓' },
                     { value: 'mansion', text: '豪宅' },
-                    { value: 'building', text: '大廈' }
+                    { value: 'building', text: '大廈' },
+                    { value: 'townhouse', text: '透天厝' },
+                    { value: 'sanheyuan', text: '三合院' }
                 ]
             },
             {
@@ -469,6 +471,172 @@
             }, 500); // 500ms 等待淡出動畫結束
         }
 
+        async function generatePic(data) {
+            try {
+                const xhttp = new XMLHttpRequest();
+                xhttp.withCredentials = true;
+
+                xhttp.onreadystatechange = function () {
+                    if (this.readyState === 4) {
+                        try {
+                            const picdata = JSON.parse(this.responseText);
+
+                            if (this.status === 200) {
+                                // const imgUrl = picdata.imagedata;
+                                const dummyImageUrl = data.imagedata;
+
+                                if (dummyImageUrl) {
+                                    console.log('IMG url get');
+                                    // return imgUrl;
+                                } else {
+                                    console.error('fail to get imagedata from response.', imgUrl);
+                                    console.error('Fetch error:', error);
+                                    loadingSpinner.classList.add('hidden');
+                                    const errorMessage = document.createElement('div');
+                                    errorMessage.textContent = '產生圖片失敗，請稍後再試。';
+                                    errorMessage.style.cssText = `
+                                        position: fixed;
+                                        bottom: 20px;
+                                        left: 50%;
+                                        transform: translateX(-50%);
+                                        background-color: #f44336;
+                                        color: white;
+                                        padding: 15px 25px;
+                                        border-radius: 8px;
+                                        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+                                        z-index: 1000;
+                                    `;
+                                    document.body.appendChild(errorMessage);
+                                    setTimeout(() => {
+                                        errorMessage.remove();
+                                    }, 5000);
+                                }
+                                
+                                resultImage.src = dummyImageUrl;
+                                resultImage.alt = '想像的退休生活圖片';
+                                
+                                loadingSpinner.classList.add('hidden');
+                                resultImage.classList.remove('hidden');
+                                resultImage.style.opacity = 0;
+                                setTimeout(() => {
+                                    resultImage.style.opacity = 1;
+                                }, 10);
+
+                                // 顯示下載和重新產生按鈕
+                                actionButtons.classList.remove('hidden');
+                                
+                                const messageBox = document.createElement('div');
+                                messageBox.textContent = '未來藍圖已產生！';
+                                messageBox.style.cssText = `
+                                    position: fixed;
+                                    bottom: 20px;
+                                    left: 50%;
+                                    transform: translateX(-50%);
+                                    background-color: var(--primary-red);
+                                    color: white;
+                                    padding: 15px 25px;
+                                    border-radius: 8px;
+                                    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+                                    z-index: 1000;
+                                `;
+                                document.body.appendChild(messageBox);
+
+                                setTimeout(() => {
+                                    messageBox.remove();
+                                }, 3000);
+
+                            } else {
+                                console.error('response status not 200', this.status);
+                                console.error('Fetch error:', error);
+                                loadingSpinner.classList.add('hidden');
+                                const errorMessage = document.createElement('div');
+                                errorMessage.textContent = '產生圖片失敗，請稍後再試。';
+                                errorMessage.style.cssText = `
+                                    position: fixed;
+                                    bottom: 20px;
+                                    left: 50%;
+                                    transform: translateX(-50%);
+                                    background-color: #f44336;
+                                    color: white;
+                                    padding: 15px 25px;
+                                    border-radius: 8px;
+                                    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+                                    z-index: 1000;
+                                `;
+                                document.body.appendChild(errorMessage);
+                                setTimeout(() => {
+                                    errorMessage.remove();
+                                }, 5000);
+                            }
+                        } catch (error) {
+                            console.error('fail to generate image', error);
+                            console.error('Fetch error:', error);
+                            loadingSpinner.classList.add('hidden');
+                            const errorMessage = document.createElement('div');
+                            errorMessage.textContent = '產生圖片失敗，請稍後再試。';
+                            errorMessage.style.cssText = `
+                                position: fixed;
+                                bottom: 20px;
+                                left: 50%;
+                                transform: translateX(-50%);
+                                background-color: #f44336;
+                                color: white;
+                                padding: 15px 25px;
+                                border-radius: 8px;
+                                box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+                                z-index: 1000;
+                            `;
+                            document.body.appendChild(errorMessage);
+                            setTimeout(() => {
+                                errorMessage.remove();
+                            }, 5000);
+                        }
+                    }
+                };
+
+                try {
+                    // env
+                    xhttp.open('POST','/retirebot/imagen', true);
+                    xhttp.open("POST","${BACKEND_FLASK_URL}/imagen",true);
+
+                    xhttp.setRequestHeader('Content-Type',"application/json");
+
+                    const csrfHeaders = csrfManager.getCsrfHeaders();
+                    for (const header in csrfHeaders) {
+                        xhttp.setRequestHeader(header, csrfHeaders[headers]);
+                    }
+
+                    xhttp.send(JSON.stringify({data}));
+                } catch (error) {
+                    console.error('fail to send requests:  ',error);
+                    console.error('Fetch error:', error);
+                    loadingSpinner.classList.add('hidden');
+                    const errorMessage = document.createElement('div');
+                    errorMessage.textContent = '產生圖片失敗，請稍後再試。';
+                    errorMessage.style.cssText = `
+                        position: fixed;
+                        bottom: 20px;
+                        left: 50%;
+                        transform: translateX(-50%);
+                        background-color: #f44336;
+                        color: white;
+                        padding: 15px 25px;
+                        border-radius: 8px;
+                        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+                        z-index: 1000;
+                    `;
+                    document.body.appendChild(errorMessage);
+                    setTimeout(() => {
+                        errorMessage.remove();
+                    }, 5000);
+                }
+
+            } catch (error) {
+                console.error('fail to generate image', error);
+                return null;
+            }
+        }
+
         // 處理產生未來藍圖按鈕點擊
         generateBtn.addEventListener('click', () => {
             questionContainer.classList.add('hidden');
@@ -478,70 +646,71 @@
 
             console.log('使用者選擇的要素：', userChoices);
             
-            const response = fetch('https://retibot-247393254326.us-central1.run.app/imagen', {
-                method: 'POST',
-                credentials:'include',
-                headers: { 'Content-Type': 'application/json', },
-                body: JSON.stringify(userChoices)
-            })
-            .then(response => response.json())
-            .then(async data => {
-                const dummyImageUrl = data.imagedata;
-                resultImage.src = dummyImageUrl;
-                resultImage.alt = '想像的退休生活圖片';
+            // const response = fetch('https://retibot-247393254326.us-central1.run.app/imagen', {
+            //     method: 'POST',
+            //     credentials:'include',
+            //     headers: { 'Content-Type': 'application/json', },
+            //     body: JSON.stringify(userChoices)
+            // })
+            // .then(response => response.json())
+            // .then(async data => {
+            //     const dummyImageUrl = data.imagedata;
+            //     resultImage.src = dummyImageUrl;
+            //     resultImage.alt = '想像的退休生活圖片';
                 
-                loadingSpinner.classList.add('hidden');
-                resultImage.classList.remove('hidden');
-                resultImage.style.opacity = 0;
-                setTimeout(() => {
-                    resultImage.style.opacity = 1;
-                }, 10);
+            //     loadingSpinner.classList.add('hidden');
+            //     resultImage.classList.remove('hidden');
+            //     resultImage.style.opacity = 0;
+            //     setTimeout(() => {
+            //         resultImage.style.opacity = 1;
+            //     }, 10);
 
-                // 顯示下載和重新產生按鈕
-                actionButtons.classList.remove('hidden');
+            //     // 顯示下載和重新產生按鈕
+            //     actionButtons.classList.remove('hidden');
                 
-                const messageBox = document.createElement('div');
-                messageBox.textContent = '未來藍圖已產生！';
-                messageBox.style.cssText = `
-                    position: fixed;
-                    bottom: 20px;
-                    left: 50%;
-                    transform: translateX(-50%);
-                    background-color: var(--primary-red);
-                    color: white;
-                    padding: 15px 25px;
-                    border-radius: 8px;
-                    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
-                    z-index: 1000;
-                `;
-                document.body.appendChild(messageBox);
+            //     const messageBox = document.createElement('div');
+            //     messageBox.textContent = '未來藍圖已產生！';
+            //     messageBox.style.cssText = `
+            //         position: fixed;
+            //         bottom: 20px;
+            //         left: 50%;
+            //         transform: translateX(-50%);
+            //         background-color: var(--primary-red);
+            //         color: white;
+            //         padding: 15px 25px;
+            //         border-radius: 8px;
+            //         box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+            //         z-index: 1000;
+            //     `;
+            //     document.body.appendChild(messageBox);
 
-                setTimeout(() => {
-                    messageBox.remove();
-                }, 3000);
-            })
-            .catch(error => {
-                console.error('Fetch error:', error);
-                loadingSpinner.classList.add('hidden');
-                const errorMessage = document.createElement('div');
-                errorMessage.textContent = '產生圖片失敗，請稍後再試。';
-                errorMessage.style.cssText = `
-                    position: fixed;
-                    bottom: 20px;
-                    left: 50%;
-                    transform: translateX(-50%);
-                    background-color: #f44336;
-                    color: white;
-                    padding: 15px 25px;
-                    border-radius: 8px;
-                    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
-                    z-index: 1000;
-                `;
-                document.body.appendChild(errorMessage);
-                setTimeout(() => {
-                    errorMessage.remove();
-                }, 5000);
-            })
+            //     setTimeout(() => {
+            //         messageBox.remove();
+            //     }, 3000);
+            // })
+            // .catch(error => {
+            //     console.error('Fetch error:', error);
+            //     loadingSpinner.classList.add('hidden');
+            //     const errorMessage = document.createElement('div');
+            //     errorMessage.textContent = '產生圖片失敗，請稍後再試。';
+            //     errorMessage.style.cssText = `
+            //         position: fixed;
+            //         bottom: 20px;
+            //         left: 50%;
+            //         transform: translateX(-50%);
+            //         background-color: #f44336;
+            //         color: white;
+            //         padding: 15px 25px;
+            //         border-radius: 8px;
+            //         box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+            //         z-index: 1000;
+            //     `;
+            //     document.body.appendChild(errorMessage);
+            //     setTimeout(() => {
+            //         errorMessage.remove();
+            //     }, 5000);
+            // })
+            generatePic(userChoices);
         });
         
         // 處理下載圖片按鈕點擊

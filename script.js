@@ -1,19 +1,19 @@
 // script.js
-console.log("script.js version: 2.2.1");
+console.log("script.js version: 3.0.0");
 
 
 let isSttReady = false;
 let isRecording = false;
 
-// 定義 ASR 相關的變數，但暫不賦值
-let username_ASR = "";
-let password_ASR = "";
-const url_ASR = "https://asrapi01.bronci.com.tw";
-const recordFileCheckbox = false;
-const parserUrl = "";
-const devices = "default";
+// // 定義 ASR 相關的變數，但暫不賦值
+// let username_ASR = "";
+// let password_ASR = "";
+// const url_ASR = "https://asrapi01.bronci.com.tw";
+// const recordFileCheckbox = false;
+// const parserUrl = "";
+// const devices = "default";
 
-let Recorder = null; // 初始化為 null
+// let Recorder = null; // 初始化為 null
 
 let autoScroll = true; // 確保這個變數有被宣告
 
@@ -31,6 +31,8 @@ let sessionId_A = null;
 
 // --- 新增: CSRF 管理器 ---
 // 確保這是您的 Flask 後端 URL，特別是端口號
+// env
+// const BACKEND_FLASK_URL = 'https://127.0.0.1:8080";
 const BACKEND_FLASK_URL = "https://retibot-247393254326.us-central1.run.app"; // 請根據您的實際後端地址調整
 
 class CsrfManager {
@@ -40,6 +42,11 @@ class CsrfManager {
   }
 
   async fetchCsrfToken() {
+      const allowedHost = "cms.st.taishinlife.com.tw";
+      if (location.protocal !== 'https:' && location.hostname === allowedHost) {
+        const safeUrl = 'https://'  + location.host + location.pathname;
+      }
+
       if (this.csrfToken && !this.isFetchingToken) {
           // 如果已經有 token 且沒有在獲取中，則直接返回
           return this.csrfToken;
@@ -57,23 +64,65 @@ class CsrfManager {
       }
 
       this.isFetchingToken = true;
-      try {
-          console.log("嘗試獲取 CSRF Token...");
-          const response = await fetch(`${BACKEND_FLASK_URL}/want_csrft`,{credentials: 'include'});
-          if (!response.ok) {
-              throw new Error(`Failed to fetch CSRF token: ${response.status} ${response.statusText}`);
-          }
-          const data = await response.json();
-          this.csrfToken = data.csrf_token;
-          console.log("CSRF Token 獲取成功。");
-          return this.csrfToken;
-      } catch (error) {
-          console.error("獲取 CSRF Token 時發生錯誤:", error);
-          this.csrfToken = null; // 確保失敗時清空
-          throw error; // 重新拋出錯誤
-      } finally {
-          this.isFetchingToken = false;
-      }
+
+      // 取得CSRF token
+      return new Promise((resolve, reject) => {
+        const xhttp = new XMLHttpRequest();
+        xhttp.withCredentials = true;
+
+        xhttp.onreadystatechange = () => {
+            if (xhttp.readyState === 4) {
+                this.isFetchingToken = false;
+
+                if (xhttp.status === 200) {
+                    try {
+                        const data = JSON.parse(xhttp.responseText);
+                        if (data.csrf_token) {
+                            this.csrfToken = data.csrf_token;
+                            console.log('CSRF Token 獲取成功', this.csrfToken);
+                            resolve(this.csrfToken);
+                        } else {
+                            console.warn("CSRF Token 不存在");
+                            reject("CSRF token missing");
+                        }
+                    } catch (err) {
+                        reject("CSRF token parse failed: " + err);
+                    }
+                } else {
+                    reject("csrf token fetch failed: " + xhttp.status);
+                }
+            }
+        };
+
+        try {
+            // env
+            // xhttp.open("POST", "/retirebot/want_csrft",true);
+            xhttp.open("POST","${BACKEND_FLASK_URL}/want_csrft",true);
+            xhttp.setRequestHeader("Accept", "application/json");
+            xhttp.send(JSON.stringify({}));
+        } catch (e) {
+            this.isFetchingToken = false;
+            reject("CSRF token fetch error: " + e);
+        }
+      })
+
+    //   try {
+    //       console.log("嘗試獲取 CSRF Token...");
+    //       const response = await fetch(`${BACKEND_FLASK_URL}/want_csrft`,{credentials: 'include'});
+    //       if (!response.ok) {
+    //           throw new Error(`Failed to fetch CSRF token: ${response.status} ${response.statusText}`);
+    //       }
+    //       const data = await response.json();
+    //       this.csrfToken = data.csrf_token;
+    //       console.log("CSRF Token 獲取成功。");
+    //       return this.csrfToken;
+    //   } catch (error) {
+    //       console.error("獲取 CSRF Token 時發生錯誤:", error);
+    //       this.csrfToken = null; // 確保失敗時清空
+    //       throw error; // 重新拋出錯誤
+    //   } finally {
+    //       this.isFetchingToken = false;
+    //   }
   }
 
   getCsrfHeaders() {
@@ -101,14 +150,17 @@ document.addEventListener('DOMContentLoaded', async () => {
     const sendButton = document.getElementById('send-button');
     const hideBannerButton = document.getElementById('hide-banner-button');
     const textInput = document.getElementById('textInput');
+    // await callGetCredApi();
+    // await initSession();
 
-    // **重要：在頁面載入時就獲取 CSRF Token**
-    try {
-        await csrfManager.fetchCsrfToken();
-    } catch (error) {
-        console.error("應用程式啟動時獲取 CSRF Token 失敗，部分功能可能受限。", error);
-        // 這裡可以選擇顯示一個用戶友好的錯誤訊息，或者禁用某些功能
-    }
+
+    // // **重要：在頁面載入時就獲取 CSRF Token**
+    // try {
+    //     await csrfManager.fetchCsrfToken();
+    // } catch (error) {
+    //     console.error("應用程式啟動時獲取 CSRF Token 失敗，部分功能可能受限。", error);
+    //     // 這裡可以選擇顯示一個用戶友好的錯誤訊息，或者禁用某些功能
+    // }
 
     // **在這裡安全地獲取憑證**
     // try {
@@ -134,19 +186,19 @@ document.addEventListener('DOMContentLoaded', async () => {
     // }
     // **在這裡安全地獲取憑證 (這部分邏輯似乎是您原始檔案中關於 ASR 憑證的獲取，請確認其安全性)**
     // 由於後端 /get_cred 現在是 POST 且受 CSRF 保護，這裡需要調用 callGetCredApi
-    try {
-        console.log("嘗試獲取 ASR 憑證...");
-        const credResponse = await callGetCredApi(); // 調用調整後的函數，它會包含 CSRF Token
-        if (credResponse) {
-            BOB = credResponse.BOB; // 假設這是用戶名
-            STEVE = credResponse.STEVE; // 假設這是密碼
-            console.log("ASR 憑證獲取成功。");
-        } else {
-            console.warn("未能獲取 ASR 憑證。");
-        }
-    } catch (error) {
-        console.error("獲取 ASR 憑證時發生錯誤:", error);
-    }
+    // try {
+    //     console.log("嘗試獲取 ASR 憑證...");
+    //     const credResponse = await callGetCredApi(); // 調用調整後的函數，它會包含 CSRF Token
+    //     if (credResponse) {
+    //         BOB = credResponse.BOB; // 假設這是用戶名
+    //         STEVE = credResponse.STEVE; // 假設這是密碼
+    //         console.log("ASR 憑證獲取成功。");
+    //     } else {
+    //         console.warn("未能獲取 ASR 憑證。");
+    //     }
+    // } catch (error) {
+    //     console.error("獲取 ASR 憑證時發生錯誤:", error);
+    // }
 
     // 禁用按鈕直到登入成功
     // recordButton.disabled = true;
@@ -238,99 +290,139 @@ document.addEventListener('DOMContentLoaded', async () => {
     });
 });
 
-// 新增: 調整 callServePdfApi 函數以包含 CSRF Token
-async function callServePdfApi(sessionId) {
-  // 確保 CSRF Token 已經獲取
-  // 這裡調用 fetchCsrfToken() 以防萬一在調用此函數時 CSRF Token 尚未載入
-  try {
-      await csrfManager.fetchCsrfToken();
-  } catch (error) {
-      console.error("無法獲取 CSRF Token，PDF 服務 API 調用將被取消。", error);
-      return null; // 或者拋出錯誤
-  }
+// // 新增: 調整 callServePdfApi 函數以包含 CSRF Token
+// async function callServePdfApi(sessionId) {
+//   // 確保 CSRF Token 已經獲取
+//   // 這裡調用 fetchCsrfToken() 以防萬一在調用此函數時 CSRF Token 尚未載入
+//   try {
+//       await csrfManager.fetchCsrfToken();
+//   } catch (error) {
+//       console.error("無法獲取 CSRF Token，PDF 服務 API 調用將被取消。", error);
+//       return null; // 或者拋出錯誤
+//   }
 
-  try {
-      const response = await fetch(`${BACKEND_FLASK_URL}/serve_pdf_by_session`, {
-          method: "POST",
-          headers: {
-              "Content-Type": "application/json",
-              ...csrfManager.getCsrfHeaders(), // <-- 添加 CSRF Token 頭部
-          },
-          body: JSON.stringify({ session_id: sessionId }), // 根據後端要求，將 session_id 放在 body 中
-          credentials: 'include',
-      });
+//   try {
+//       const response = await fetch(`${BACKEND_FLASK_URL}/serve_pdf_by_session`, {
+//           method: "POST",
+//           headers: {
+//               "Content-Type": "application/json",
+//               ...csrfManager.getCsrfHeaders(), // <-- 添加 CSRF Token 頭部
+//           },
+//           body: JSON.stringify({ session_id: sessionId }), // 根據後端要求，將 session_id 放在 body 中
+//           credentials: 'include',
+//       });
 
-      if (!response.ok) {
-          const errorText = await response.text();
-          throw new Error(`PDF service API call failed: ${response.status} - ${errorText}`);
-      }
+//       if (!response.ok) {
+//           const errorText = await response.text();
+//           throw new Error(`PDF service API call failed: ${response.status} - ${errorText}`);
+//       }
 
-      const data = await response.json();
-      console.log("PDF service response:", data);
-      return data;
-  } catch (error) {
-      console.error("Error calling serve_pdf_by_session:", error);
-      throw error; // 重新拋出錯誤
-  }
-}
+//       const data = await response.json();
+//       console.log("PDF service response:", data);
+//       return data;
+//   } catch (error) {
+//       console.error("Error calling serve_pdf_by_session:", error);
+//       throw error; // 重新拋出錯誤
+//   }
+// }
 
 // 新增: 調整 callGetCredApi 函數以包含 CSRF Token
-async function callGetCredApi() {
-  // 確保 CSRF Token 已經獲取
-  // 這裡調用 fetchCsrfToken() 以防萬一在調用此函數時 CSRF Token 尚未載入
-  try {
-      await csrfManager.fetchCsrfToken();
-  } catch (error) {
-      console.error("無法獲取 CSRF Token，獲取憑證 API 調用將被取消。", error);
-      return null; // 或者拋出錯誤
-  }
+// async function callGetCredApi() {
+//   // 確保 CSRF Token 已經獲取
+//   // 這裡調用 fetchCsrfToken() 以防萬一在調用此函數時 CSRF Token 尚未載入
+//   try {
+//       const fetchCsrfToken = await csrfManager.fetchCsrfToken(); // get token
+//       console.log("CSRF token ready: " + fetchCsrfToken)
+//   } catch (error) {
+//       console.error("無法獲取 CSRF Token，獲取憑證 API 調用將被取消。", error);
+//     //   return null; // 或者拋出錯誤
+//   }
 
-  try {
-      console.log('start fetching cred')
-      const response = await fetch(`${BACKEND_FLASK_URL}/wake_up_and_work`, {
-          method: "GET", // 後端已改為 GET
-          credentials: 'include',
-          headers: {
-              "Content-Type": "application/json",
-              ...csrfManager.getCsrfHeaders(), // <-- 添加 CSRF Token 頭部
-          },
-      });
+//   try {
+//       console.log('start fetching cred')
+//       const response = await fetch(`${BACKEND_FLASK_URL}/wake_up_and_work`, {
+//           method: "GET", // 後端已改為 GET
+//           credentials: 'include',
+//           headers: {
+//               "Content-Type": "application/json",
+//               ...csrfManager.getCsrfHeaders(), // <-- 添加 CSRF Token 頭部
+//           },
+//       });
 
-      if (!response.ok) {
-          const errorText = await response.text();
-          throw new Error(`Get credentials API call failed: ${response.status} - ${errorText}`);
-      }
+//       if (!response.ok) {
+//           const errorText = await response.text();
+//           throw new Error(`Get credentials API call failed: ${response.status} - ${errorText}`);
+//       }
 
-      const data = await response.json();
-      // console.log("Get credentials response:", data);
-      return data;
-  } catch (error) {
-      console.error("Error calling get_cred:", error);
-      throw error; // 重新拋出錯誤，讓調用方 (如 DOMContentLoaded 裡面的 try-catch) 處理
-  }
-}
+//       const data = await response.json();
+//       // console.log("Get credentials response:", data);
+//       return data;
+//   } catch (error) {
+//       console.error("Error calling get_cred:", error);
+//       throw error; // 重新拋出錯誤，讓調用方 (如 DOMContentLoaded 裡面的 try-catch) 處理
+//   }
+// }
 
 
 async function initSession() {
+    console.log('Start Init Conversation...');
+
     try {
-        const requestOptions = {
-            method: "POST",
-            // redirect: "follow",
-            credentials: 'include'
+        const token = await csrfManager.fetchCsrfToken();
+
+        const xhttp = new XMLHttpRequest();
+        xhttp.withCredentials = true;
+
+        xhttp.onreadystatechange = function () {
+            if (this.readyState === 4) {
+                try {
+                    const result = JSON.parse(this.responseText);
+                    if (this.status === 200) {
+                        console.log(result);
+                        appendMessage('bot',result.responseText);
+                        sessionId_A = DOMPurify.sanitize(result.session_id);
+                    } else {
+                        console.error('init conversation failed: ', result);
+                        appendMessage('bot','初始化對話失敗');
+                    }
+                } catch (error) {
+                    console.error('parsing initial response failed: ', error);
+                    appendMessage('bot','初始化對話失敗');
+                }
+            }
         };
 
-        const response = await fetch("https://retibot-247393254326.us-central1.run.app/init",
-          requestOptions
-        );
-        const result = await response.json();
-        console.log(result);
+        //env
+        // xhttp.open('POST','/retirebot/init', true);
+        xhttp.open("POST","${BACKEND_FLASK_URL}/init",true);
 
-        appendMessage('bot', result.response);
+        xhttp.setRequestHeader('Content-Type',"application/json");
 
-        const sessionId = DOMPurify.sanitize(result.session_id);
-        return sessionId;
+        const csrfHeaders = csrfManager.getCsrfHeaders();
+        for (const header in csrfHeaders) {
+            xhttp.setRequestHeader(header, csrfHeaders[headers]);
+        }
+
+        xhttp.send(JSON.stringify({}));
+
+        // const requestOptions = {
+        //     method: "POST",
+        //     // redirect: "follow",
+        //     credentials: 'include'
+        // };
+
+        // const response = await fetch("https://retibot-247393254326.us-central1.run.app/init",
+        //   requestOptions
+        // );
+        // const result = await response.json();
+        // console.log(result);
+
+        // appendMessage('bot', result.response);
+
+        // const sessionId = DOMPurify.sanitize(result.session_id);
+        // return sessionId;
     } catch (error) {
-        console.error('初始化會話失敗:', error);
+        console.error('CSRF Token:', error);
         appendMessage('bot', '初始化會話失敗');
         return null;
     }
@@ -373,7 +465,7 @@ function saveLanguage() {
 const chat = document.getElementById('chat');
 async function sendMessage() {
     const input = document.getElementById('textInput');
-    const text = input.value.trim();
+    const text = DOMPurify.sanitize(input.value.trim());
     if (text === '') return;
 
     if (text.length>300) {
@@ -385,46 +477,138 @@ async function sendMessage() {
     input.value = '';
 
     appendLoading();
+    try {
+        await csrfManager.fetchCsrfToken();
+        const xhttp = new XMLHttpRequest();
+        xhttp.withCredentials = true;
 
-    fetch('https://retibot-247393254326.us-central1.run.app/chat', {
-        method: 'POST',
-        credentials:'include',
-        headers: { 'Content-Type': 'application/json', },
-        body: JSON.stringify({ session_id: sessionId_A, message: text })
-    })
-        .then(res => res.json())
-        .then(async data => {
-            removeLoading();
-            appendMessage('bot', DOMPurify.sanitize(data.response));
-            const TTS_TW = new TTS();
-            const textFromAnotherBot = data.res_for_sound;
-            TTS_TW.setLanguage(languageSelect_A);
-            // if (document.getElementById('voice-toggle').checked) {
-            //     TTS_TW.synthesizeSpeech(textFromAnotherBot);
-            // }
-            if (data.ending !== 0) {
-                appendLoading();
-                if (data.ending === 1) {
-                    try {
-                        await generatePDF(data);
-                    } catch (error) {
-                        console.error("Error generating PDF:", error);
-                        appendMessage('bot', "PDF 報告生成失敗。");
-                    }
-                };
-
+        xhttp.onreadystatechange = function () {
+            if (this.readyState === 4) {
                 removeLoading();
-                appendMessage('bot', "本次諮詢已結束，如要重新開始對話重整頁面。");
 
-                const inputArea = document.querySelector(".input-area");
-                inputArea.style.display = "none";
+                try{
+                    const data = JSON.parse(this.responseText);
+                    if (this.status === 200) {
+                        appendMessage('bot',DOMPurify.sanitize(data.response));
+
+                        // const TTS_TW = new TTS();
+                        // const textFromAnotherBot = data.res_for_sound;
+                        // TTS_TW.setLanguage(languageSelect_A);
+                        // if (document.getElementById('voice-toggle').checked) {
+                        //     TTS_TW.synthesizeSpeech(textFromAnotherBot);
+                        // }
+
+                        if (data.ending !== 0) {
+                            appendLoading();
+
+                            if (data.ending === 1) {
+                                try{
+                                    generatePDF(data)
+                                        .then(() => {
+                                            removeLoading();
+                                            appendMessage('bot','PDF 報告產生成功');
+
+                                            appendMessage('bot','本次諮詢已結束，如要重新開始對話請重整頁面。');
+                                            const inputArea = document.querySelector('.input-area');
+                                            inputArea.style.display = 'none';
+                                        })
+                                        .catch(error => {
+                                            console.error('Error generating PDF:', error);
+                                            appendMessage('bot', 'PDF報告產出失敗。');
+                                            removeLoading();
+
+                                            appendMessage('bot','本次諮詢已結束，如要重新開始對話請重整頁面。');
+                                            const inputArea = document.querySelector('.input-area');
+                                            inputArea.style.display = 'none';
+                                        });
+                                } catch (error) {
+                                    console.error('PDF generate error: ',error);
+                                    appendMessage('bot', 'PDF報告產出失敗。');
+                                    removeLoading();
+
+                                    appendMessage('bot','本次諮詢已結束，如要重新開始對話請重整頁面。');
+                                    const inputArea = document.querySelector('.input-area');
+                                    inputArea.style.display = 'none';
+                                }
+                            }
+                        }
+                    } else {
+                        console.error('API response error: ', data);
+                        appendMessage('bot','很抱歉，目前後端服務忙線中，請重整畫面重新連接');
+                    }
+                } catch (error) {
+                    console.error('Parsing error: ', data)
+                    appendMessage('bot','很抱歉，目前後端服務忙線中，請重整畫面重新連接');
+                }
             }
-        })
-        .catch(error => {
-            removeLoading();
-            console.error('Error', error);
-            appendMessage('bot', '很抱歉，大宇宙意識斷線中，請重整頁面以重新連接。')
-        });
+        };
+
+
+        // env
+        // xhttp.open('POST','/retirebot/chat',true);
+        xhttp.open("POST","${BACKEND_FLASK_URL}/want_csrft",true);
+        xhttp.setRequestHeader('Content-Type',"application/json");
+
+        const csrfHeaders = await csrfManager.getCsrfHeaders();
+        for (const header in csrfHeaders) {
+            xhttp.setRequestHeader(header, csrfHeaders[header]);
+        }
+
+        const payload = {
+            session_id: sessionId_A,
+            message: text
+        };
+
+        xhttp.send(JSON.stringify(payload));
+
+    } catch (error) {
+        console.error('CSRF token error, stop sendMessage', error);
+        removeLoading();
+        appendMessage('bot','初始化錯誤，請重新整理。');
+    }
+
+
+
+
+    // fetch('https://retibot-247393254326.us-central1.run.app/chat', {
+    //     method: 'POST',
+    //     credentials:'include',
+    //     headers: { 'Content-Type': 'application/json', },
+    //     body: JSON.stringify({ session_id: sessionId_A, message: text })
+    // })
+    //     .then(res => res.json())
+    //     .then(async data => {
+    //         removeLoading();
+    //         appendMessage('bot', DOMPurify.sanitize(data.response));
+    //         const TTS_TW = new TTS();
+    //         const textFromAnotherBot = data.res_for_sound;
+    //         TTS_TW.setLanguage(languageSelect_A);
+    //         // if (document.getElementById('voice-toggle').checked) {
+    //         //     TTS_TW.synthesizeSpeech(textFromAnotherBot);
+    //         // }
+    //         if (data.ending !== 0) {
+    //             appendLoading();
+    //             if (data.ending === 1) {
+    //                 try {
+    //                     await generatePDF(data);
+    //                 } catch (error) {
+    //                     console.error("Error generating PDF:", error);
+    //                     appendMessage('bot', "PDF 報告生成失敗。");
+    //                 }
+    //             };
+
+    //             removeLoading();
+    //             appendMessage('bot', "本次諮詢已結束，如要重新開始對話重整頁面。");
+
+    //             const inputArea = document.querySelector(".input-area");
+    //             inputArea.style.display = "none";
+    //         }
+    //     })
+    //     .catch(error => {
+    //         removeLoading();
+    //         console.error('Error', error);
+    //         appendMessage('bot', '很抱歉，大宇宙意識斷線中，請重整頁面以重新連接。')
+    //     });
 }
 async function appendPDFMessage(urllink) {
     const message = document.createElement('div');
@@ -496,13 +680,17 @@ function appendMessage(sender, text) {
         avatar.className = ' avatar';
         message.appendChild(avatar);
 
-        const bubble = document.createElement('div');
-        bubble.className = ' bubble';
+        // const bubble = document.createElement('div');
+        // bubble.className = ' bubble';
         
-        const unsafeHTML = marked.parse(text);
-        const sanitizedHTML = DOMPurify.sanitize(unsafeHTML);
+        const rawHtml = marked.parse(text);
+        const cleanHtml = DOMPurify.sanitize(unsafeHTML);
 
-        bubble.innerHTML = sanitizedHTML;
+        // bubble.innerHTML = sanitizedHTML;
+        // message.appendChild(bubble);
+        const bubble = ducument.createElement('div');
+        bubble.className = ' bubble';
+        bubble.innerHTML = cleanHtml;
         message.appendChild(bubble);
 
     } else if (sender === 'user') {
@@ -547,172 +735,220 @@ function removeLoading() {
 }
 
 async function generatePDF(data) {
-    // 確保 CSRF Token 已經獲取
-    try {
-        await csrfManager.fetchCsrfToken(); // 重新獲取或確保已獲取最新 token
-    } catch (error) {
-        console.error("無法獲取 CSRF Token，/genpdf API 調用將被取消。", error);
-        return null; // 或者拋出錯誤
-    }
+    return new Promise((resolve, reject) => {
+        const xhttp = new XMLHttpRequest();
+        xhttp.withCredentials = true;
 
-    try {
-        const response = await fetch('https://retibot-247393254326.us-central1.run.app/genpdf', {
-            method: 'POST',
-            credentials: 'include',
-            headers: { 
-              'Content-Type': 'application/json',
-              ...csrfManager.getCsrfHeaders(), // <-- 添加 CSRF Token 頭部
-             },
-            body: JSON.stringify({ session_id: data.session_id, proposal: data.response }),
-            
-        });
+        xhttp.onreadystatechange = function () {
+            if (this.readyState === 4) {
+                try{
+                    const pdfdata = JSON.parse(this.responseText);
+                    if (this.status === 200) {
+                        const pdfUrl = pdfdata.url;
+                        if (pdfUrl) {
+                            appendMessage(pdfUrl);
+                            resolve();
+                        } else {
+                            console.error('fail to retrieve PDF link', pdfdata);
+                            reject(new Error('PDF link missing'));
+                        }
+                    } else {
+                        reject(new Error(`HTTP error! status: ${this.status}`))
+                    }
+                } catch (error) {
+                    reject(error);
+                }
+            }
+        };
 
-        if (!response.ok) {
-            throw new Error(`HTTP error! Status: ${response.status}`);
+        try {
+            // env
+            // xhttp.open("POST", "/retirebot/genpdf",true);
+            xhttp.open("POST","${BACKEND_FLASK_URL}/genpdf",true);
+            xhttp.setRequestHeader("Accept", "application/json");
+
+            const csrfHeaders = csrfManager.getCsrfHeaders();
+            for (const header in csrfHeaders) {
+                xhttp.setRequestHeader(header, csrfHeaders(header));
+            }
+
+            const payload = {
+                session_id: data.session_id,
+                proposal: data.response
+            };
+
+            xhttp.send(JSON.stringify(payload));
+        } catch (error) {
+            reject(error);
         }
-
-        const pdfdata = await response.json();
-        const pdfUrl = pdfdata.url;
-
-        if (pdfUrl) {
-            console.log('link Retrieved: ', pdfUrl);
-            appendPDFMessage(pdfUrl);
-        } else {
-            console.error('fail to retrieve PDF link', pdfdata);
-        }
-    } catch (error) {
-        console.error('generate PDF failed: ', error);
-    }
+    });
 }
+//     // 確保 CSRF Token 已經獲取
+//     try {
+//         await csrfManager.fetchCsrfToken(); // 重新獲取或確保已獲取最新 token
+//     } catch (error) {
+//         console.error("無法獲取 CSRF Token，/genpdf API 調用將被取消。", error);
+//         return null; // 或者拋出錯誤
+//     }
+
+//     try {
+//         const response = await fetch('https://retibot-247393254326.us-central1.run.app/genpdf', {
+//             method: 'POST',
+//             credentials: 'include',
+//             headers: { 
+//               'Content-Type': 'application/json',
+//               ...csrfManager.getCsrfHeaders(), // <-- 添加 CSRF Token 頭部
+//              },
+//             body: JSON.stringify({ session_id: data.session_id, proposal: data.response }),
+            
+//         });
+
+//         if (!response.ok) {
+//             throw new Error(`HTTP error! Status: ${response.status}`);
+//         }
+
+//         const pdfdata = await response.json();
+//         const pdfUrl = pdfdata.url;
+
+//         if (pdfUrl) {
+//             console.log('link Retrieved: ', pdfUrl);
+//             appendPDFMessage(pdfUrl);
+//         } else {
+//             console.error('fail to retrieve PDF link', pdfdata);
+//         }
+//     } catch (error) {
+//         console.error('generate PDF failed: ', error);
+//     }
+// }
 
 /**
  * 允許麥克風權限
  */
-let tempStream = null;
-async function getUserMediaPermission() {
-    tempStream = await navigator.mediaDevices.getUserMedia({
-        audio: {
-            noiseSuppression: false,
-            autoGainControl: false,
-        },
-        video: false,
-    });
-}
+// let tempStream = null;
+// async function getUserMediaPermission() {
+//     tempStream = await navigator.mediaDevices.getUserMedia({
+//         audio: {
+//             noiseSuppression: false,
+//             autoGainControl: false,
+//         },
+//         video: false,
+//     });
+// }
 
 /**
  * 初始化
  */
-async function handleInit() {
-    try {
-        handleDestroy();
+// async function handleInit() {
+//     try {
+//         handleDestroy();
 
-        // 關鍵修正：確保傳入 username_ASR, password_ASR, url_ASR, recordFileCheckbox
-        Recorder = new ASRRecorder(
-            BOB, // 傳遞 username
-            STEVE, // 傳遞 password
-            url_ASR,
-            recordFileCheckbox
-        );
-        console.log("Initialized");
-        proxy.status = true;
-    } catch (error) {
-        console.log("初始化錯誤：", error);
-        proxy.status = false;
-        Recorder = null; // 初始化失敗時確保 Recorder 為 null
-    }
-}
+//         // 關鍵修正：確保傳入 username_ASR, password_ASR, url_ASR, recordFileCheckbox
+//         Recorder = new ASRRecorder(
+//             BOB, // 傳遞 username
+//             STEVE, // 傳遞 password
+//             url_ASR,
+//             recordFileCheckbox
+//         );
+//         console.log("Initialized");
+//         proxy.status = true;
+//     } catch (error) {
+//         console.log("初始化錯誤：", error);
+//         proxy.status = false;
+//         Recorder = null; // 初始化失敗時確保 Recorder 為 null
+//     }
+// }
 
 /**
  * 開始轉換聲音資料
  */
-async function handleStart() {
-    const parserUrlValue = parserUrl;
-    const model = null;
-    const deviceValue = null;
+// async function handleStart() {
+//     const parserUrlValue = parserUrl;
+//     const model = null;
+//     const deviceValue = null;
 
-    try {
-        // 確保 Recorder 存在才呼叫 start
-        if (Recorder) {
-            await Recorder.start(model, deviceValue, parserUrlValue, (data) => {
-                handleRender(data);
-            });
-        } else {
-            // 這個錯誤很可能是因為 handleInit 失敗了
-            throw new Error("Recorder is not initialized.");
-        }
-        await setScreenLock();
-        proxy.isRecording = true;
-    } catch (error) {
-        console.error(error); // 改為 console.error 更清晰
-        handleStop();
-    }
-}
+//     try {
+//         // 確保 Recorder 存在才呼叫 start
+//         if (Recorder) {
+//             await Recorder.start(model, deviceValue, parserUrlValue, (data) => {
+//                 handleRender(data);
+//             });
+//         } else {
+//             // 這個錯誤很可能是因為 handleInit 失敗了
+//             throw new Error("Recorder is not initialized.");
+//         }
+//         await setScreenLock();
+//         proxy.isRecording = true;
+//     } catch (error) {
+//         console.error(error); // 改為 console.error 更清晰
+//         handleStop();
+//     }
+// }
 
-/**
- * 停止轉換聲音資料
- */
-async function handleStop() {
-    // 確保 Recorder 存在才呼叫 stop
-    if (Recorder) {
-        await Recorder.stop();
-    } else {
-        console.warn("Recorder is null, cannot stop.");
-    }
-    await releaseScreenLock();
-    proxy.isRecording = false;
-}
+// /**
+//  * 停止轉換聲音資料
+//  */
+// async function handleStop() {
+//     // 確保 Recorder 存在才呼叫 stop
+//     if (Recorder) {
+//         await Recorder.stop();
+//     } else {
+//         console.warn("Recorder is null, cannot stop.");
+//     }
+//     await releaseScreenLock();
+//     proxy.isRecording = false;
+// }
 
-/**
- * 當你離開頁面時，若頁面有 keep-alive 機制，請用此函式停止轉換聲音資料及回復 ASRRecorder 初始狀態
- */
-function handleDestroy() {
-    if (Recorder) {
-        Recorder.destroy();
-        Recorder = null; // 銷毀後將 Recorder 設為 null
-    }
-}
+// /**
+//  * 當你離開頁面時，若頁面有 keep-alive 機制，請用此函式停止轉換聲音資料及回復 ASRRecorder 初始狀態
+//  */
+// function handleDestroy() {
+//     if (Recorder) {
+//         Recorder.destroy();
+//         Recorder = null; // 銷毀後將 Recorder 設為 null
+//     }
+// }
 
-/**
- * Demo 如何將翻譯好的資料渲染到畫面上
- */
-function handleRender(data) {
-    const { code, result, status, message2, bits, volume } = data;
+// /**
+//  * Demo 如何將翻譯好的資料渲染到畫面上
+//  */
+// function handleRender(data) {
+//     const { code, result, status, message2, bits, volume } = data;
 
-    if (status) {
-        if (status === "opened") {
-            console.log(status);
-        } else if (status === "closed") {
-            console.log(status);
-            handleStop();
-        } else if (status === "bits") {
-            console.log(status);
-        } else if (status === "volume") {
-            console.log(status);
-        }
-        return;
-    }
+//     if (status) {
+//         if (status === "opened") {
+//             console.log(status);
+//         } else if (status === "closed") {
+//             console.log(status);
+//             handleStop();
+//         } else if (status === "bits") {
+//             console.log(status);
+//         } else if (status === "volume") {
+//             console.log(status);
+//         }
+//         return;
+//     }
 
-    if (code === 100 || code === 180) return;
+//     if (code === 100 || code === 180) return;
 
-    const errorCode = [401, 408, 415, 486, 500, 502, 503, 599];
-    if (errorCode.includes(code)) {
-        console.log(code);
-        handleStop();
-    }
+//     const errorCode = [401, 408, 415, 486, 500, 502, 503, 599];
+//     if (errorCode.includes(code)) {
+//         console.log(code);
+//         handleStop();
+//     }
 
-    if (code === 204) {
-        console.log(code);
-        handleStop();
-    }
+//     if (code === 204) {
+//         console.log(code);
+//         handleStop();
+//     }
 
-    if (code === 200) {
-        console.log(code);
-        const { segment, transcript, final } = result[0];
-        const textInput = document.getElementById('textInput');
-        textInput.value = result[0].transcript;
-        console.log("錄音結果", result[0].transcript);
-    }
-}
+//     if (code === 200) {
+//         console.log(code);
+//         const { segment, transcript, final } = result[0];
+//         const textInput = document.getElementById('textInput');
+//         textInput.value = result[0].transcript;
+//         console.log("錄音結果", result[0].transcript);
+//     }
+// }
 
 /**
  * 確認瀏覽器是否支援 screen wake lock
@@ -766,6 +1002,6 @@ function hideBanner() {
 }
 
 console.log(`Function:智能機器人 Author:Daniel Chien`);
-console.log(`Function:語音輸入與輸出 Author:長問科技`);
+// console.log(`Function:語音輸入與輸出 Author:長問科技`);
 console.log(`Function:前端介面與串接 Author:Angela Ko`);
-const VERSION = "1.0.5";
+const VERSION = "3.0.0";
