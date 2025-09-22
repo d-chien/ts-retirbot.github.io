@@ -680,11 +680,11 @@ function appendMessage(sender, text) {
             safeText = href.text || text || '';
         }
 
-        let html = `<a href="${safeHref}"`;
+        let html = `<a href="${safeHref}"  target="_blank" rel="noopener noreferrer"`;
         if (title) {
-            html += ` title "${title}"`;
+            html += ` title="${title}"`;
         }
-        html += ` target="_blank" rel="noopener noreferrer">${safeText}</a>`;
+        html += `>${safeText}</a>`;
         return html;
     }
 
