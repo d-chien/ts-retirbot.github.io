@@ -680,7 +680,7 @@ function appendMessage(sender, text) {
             safeText = href.text || text || '';
         }
 
-        let html = `<a href="${safeHref}"  target="_blank" rel="noopener noreferrer"`;
+        let html = `<a target="_blank" rel="noopener noreferrer" href="${safeHref}" `;
         if (title) {
             html += ` title="${title}"`;
         }
