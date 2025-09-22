@@ -32,7 +32,7 @@ let sessionId_A = null;
 // --- 新增: CSRF 管理器 ---
 // 確保這是您的 Flask 後端 URL，特別是端口號
 // env
-// const BACKEND_FLASK_URL = 'https://127.0.0.1:8080";
+//const BACKEND_FLASK_URL = 'https://127.0.0.1:8080';
 const BACKEND_FLASK_URL = "https://retibot-247393254326.us-central1.run.app"; // 請根據您的實際後端地址調整
 
 class CsrfManager {
@@ -42,8 +42,8 @@ class CsrfManager {
   }
 
   async fetchCsrfToken() {
-      const allowedHost = "cms.st.taishinlife.com.tw";
-      if (location.protocal !== 'https:' && location.hostname === allowedHost) {
+      const allowedHost = "cms.st.taishinlife.com.tw";//<----根據環境這邊要修改
+      if (location.protocol !== 'https:' && location.hostname === allowedHost) {
         const safeUrl = 'https://'  + location.host + location.pathname;
       }
 
@@ -75,8 +75,10 @@ class CsrfManager {
                 this.isFetchingToken = false;
 
                 if (xhttp.status === 200) {
+					console.log('原始 responseText:', xhttp.responseText);
                     try {
                         const data = JSON.parse(xhttp.responseText);
+						console.log('data', data);
                         if (data.csrf_token) {
                             this.csrfToken = data.csrf_token;
                             console.log('CSRF Token 獲取成功', this.csrfToken);
@@ -96,7 +98,7 @@ class CsrfManager {
 
         try {
             // env
-            // xhttp.open("POST", "/retirebot/want_csrft",true);
+            //xhttp.open("POST", "/retirebot/want_csrft",true);
             xhttp.open("POST",`${BACKEND_FLASK_URL}/want_csrft`,true);
             xhttp.setRequestHeader("Accept", "application/json");
             xhttp.send(JSON.stringify({}));
@@ -151,7 +153,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     const hideBannerButton = document.getElementById('hide-banner-button');
     const textInput = document.getElementById('textInput');
     // await callGetCredApi();
-    // await initSession();
+     await initSession();
 
 
     // // **重要：在頁面載入時就獲取 CSRF Token**
@@ -205,14 +207,14 @@ document.addEventListener('DOMContentLoaded', async () => {
     // recordButton.textContent = "初始化中...";
 
     // 處理 session 初始化
-    await initSession();
-    // const sessionId = await initSession();
-    // if (sessionId) {
-    //     console.log("Session 已初始化，sessionId:", sessionId);
-    //     sessionId_A = DOMPurify.sanitize(sessionId);
-    // } else {
-    //     console.error("Session 初始化失敗");
-    // }
+    //await initSession();
+    //const sessionId = await initSession();
+    //if (sessionId) {
+    //    console.log("Session 已初始化，sessionId:", sessionId);
+    //    sessionId_A = DOMPurify.sanitize(sessionId);
+    //} else {
+    //    console.error("Session 初始化失敗");
+    //}
 
     // 確保 handleInit 在憑證獲取後執行
     // async function setupSTT() {
@@ -376,6 +378,7 @@ async function initSession() {
 
         xhttp.onreadystatechange = function () {
             if (this.readyState === 4) {
+				console.log('原始 responseText:', xhttp.responseText);
                 try {
                     const result = JSON.parse(this.responseText);
                     if (this.status === 200) {
@@ -394,9 +397,8 @@ async function initSession() {
         };
 
         //env
-        // xhttp.open('POST','/retirebot/init', true);
+        //xhttp.open('POST','/retirebot/init', true);
         xhttp.open("POST",`${BACKEND_FLASK_URL}/init`,true);
-
         xhttp.setRequestHeader('Content-Type',"application/json");
 
         const csrfHeaders = csrfManager.getCsrfHeaders();
@@ -552,7 +554,7 @@ async function sendMessage() {
 
 
         // env
-        // xhttp.open('POST','/retirebot/chat',true);
+        //xhttp.open('POST','/retirebot/chat',true);
         xhttp.open("POST",`${BACKEND_FLASK_URL}/chat`,true);
         xhttp.setRequestHeader('Content-Type',"application/json");
 
@@ -783,7 +785,7 @@ async function generatePDF(data) {
 
         try {
             // env
-            // xhttp.open("POST", "/retirebot/genpdf",true);
+            //xhttp.open("POST", "/retirebot/genpdf",true);
             xhttp.open("POST",`${BACKEND_FLASK_URL}/genpdf`,true);
             xhttp.setRequestHeader("Content-Type", "application/json");
 
