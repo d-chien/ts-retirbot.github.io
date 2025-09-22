@@ -540,7 +540,7 @@
                     try {
                         console.log('start fetching token...')
                         // env
-                        // xhttp.open("POST", "/retirebot/want_csrft",true);
+                        //xhttp.open("POST", "/retirebot/want_csrft",true);
                         xhttp.open("POST",`${BACKEND_FLASK_URL}/want_csrft`,true);
                         xhttp.setRequestHeader("Accept", "application/json");
                         xhttp.send(JSON.stringify({}));
@@ -697,7 +697,7 @@
 
                 try {
                     // env
-                    xhttp.open('POST','/retirebot/imagen', true);
+                    //xhttp.open('POST','/retirebot/imagen', true);
                     xhttp.open("POST",`${BACKEND_FLASK_URL}/imagen`,true);
 
                     xhttp.setRequestHeader('Content-Type',"application/json");
