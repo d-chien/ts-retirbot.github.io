@@ -93,6 +93,26 @@
             justify-content: center;
             flex-wrap: wrap;
         }
+
+        .button-item {
+            display: flex; /* 啟用 Flexbox */
+            flex-direction: column; /* 垂直堆疊 (圖片在上，文字在下) */
+            align-items: center; /* 水平置中 */
+            gap: 10px; /* 圖片（按鈕）和文字之間的間距 */
+            width: calc(50% - 10px);
+            /*flex: 1;*/ /* 讓每個項目平均佔據空間 */
+            min-width: 150px; /* 確保在小螢幕上有足夠寬度 */
+        }
+        
+        .button-text {
+            /* 讓文字更醒目，並重設 <p> 預設的 margin */
+            color: var(--text-color);
+            font-size: 1.1em;
+            font-weight: bold;
+            margin: 0;
+            padding: 0 5px; /* 稍微保護一下邊界 */
+            text-align: center;
+        }
         
         /* 中型裝置 (md) 以下時，改為上下排列 */
         @media (max-width: 768px) {
@@ -102,6 +122,12 @@
             .container {
                 padding: 20px;
             }
+            .button-item {
+                /* 小螢幕時每個項目佔滿寬度 */
+                width: 100%;
+                max-width: 300px; /* 限制小螢幕時的最大寬度，讓按鈕不會過大 */
+                margin: 0 auto; /* 置中 */
+            }
         }
 
         .button {
@@ -109,25 +135,37 @@
             flex-direction: column; /* 圖片和文字上下排列 */
             align-items: center;
             justify-content: center;
-            padding: 20px;
+            /* padding: 5px; */
+            margin: 0.1em;
             font-size: 1.1em;
             font-weight: bold;
             border-radius: 8px;
             text-decoration: none;
             color: white;
-            flex: 1; /* 讓按鈕平均佔據空間 */
+            flex: 0; /* 讓按鈕平均佔據空間 */
             transition: background-color 0.3s, transform 0.2s;
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            background-color: var(--primary-red);
+            padding: 0;
+            width: 100%;
         }
 
         .button img {
             width: 150px; /* 設定圖片寬度，使其變大 */
             height: 150px; /* 設定圖片高度，確保為正方形 */
-            margin-bottom: 10px; /* 圖片與文字間距 */
+            border-radius: 8px;
+            width: 100%;
+            height: auto;
         }
-
+        
+        .button:hover {
+            background-color: var(--dark-red);
+            transform: translateY(-2px);
+        }
+        
+        /*         
         .btn-retire, .btn-other, .btn-promotion {
-            background-color: var(--primary-red); /* 台新紅 */
+            background-color: var(--primary-red);
         }
 
         .btn-retire:hover {
@@ -143,7 +181,7 @@
         .btn-promotion:hover {
             background-color: var(--dark-red);
             transform: translateY(-2px);
-        }
+        } */
 
     </style>
 </head>
@@ -157,22 +195,33 @@
         <h1>台新安心退</h1>
         <p>請選擇您想前往的服務</p>
         <div class="button-group">
-            <a href="future_vision.html" class="button btn-retire">
-                <img src="media/corgi.jpg" alt="退休藍圖">
-                想像您的退休生活
-            </a>
-            <a href="chatbot.html" class="button btn-other">
-                <img src="media/corgi.jpg" alt="退休規劃顧問">
-                聊聊您的退休規劃
-            </a>
-            <a href="https://www.taishinlife.com.tw/antifraud2025q3/index.html?utm_source=web&utm_medium=banner&utm_campaign=2025q3_antifraud&utm_content=officialwebsite" class="button btn-promotion" target="_blank">
-                <img src="media/corgi.jpg" alt="釣魚台生存戰活動">
-                釣魚台生存戰
-            </a>
-            <a href="https://www.taishinlife.com.tw/antifraud2025q3/index.html?utm_source=web&utm_medium=banner&utm_campaign=2025q3_antifraud&utm_content=officialwebsite" class="button btn-promotion" target="_blank">
-                <img src="media/corgi.jpg" alt="推廣2">
-                釣魚台生存戰2
-            </a>
+            <div class="button-item">
+                <a href="future_vision.html" class="button btn-retire">
+                    <img src="media/corgi.jpg" alt="退休藍圖">
+                </a>
+                <p class="button-text">想像您的退休生活</p>
+            </div>
+
+            <div class="button-item">
+                <a href="chatbot.html" class="button btn-other">
+                    <img src="media/corgi.jpg" alt="退休規劃顧問">
+                </a>
+                <p class="button-text">聊聊您的退休規劃</p>
+            </div>
+
+            <div class="button-item">
+                <a href="https://www.taishinlife.com.tw/antifraud2025q3/index.html?utm_source=web&utm_medium=banner&utm_campaign=2025q3_antifraud&utm_content=officialwebsite" class="button btn-promotion" target="_blank">
+                    <img src="media/corgi.jpg" alt="釣魚台生存戰活動">
+                </a>
+                <p class="button-text">釣魚台生存戰</p>
+            </div>
+
+            <div class="button-item">
+                <a href="https://www.taishinlife.com.tw/antifraud2025q3/index.html?utm_source=web&utm_medium=banner&utm_campaign=2025q3_antifraud&utm_content=officialwebsite" class="button btn-promotion" target="_blank">
+                    <img src="media/corgi.jpg" alt="推廣2">
+                </a>
+                <p class="button-text">釣魚台生存戰2</p>
+            </div>
         </div>
     </div>
 </body>
