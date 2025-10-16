@@ -706,7 +706,10 @@ function appendMessage(sender, text) {
         // bubble.className = ' bubble';
         
         const rawHtml = marked.parse(text);
-        const cleanHtml = DOMPurify.sanitize(rawHtml);
+        // const cleanHtml = DOMPurify.sanitize(rawHtml);
+		const cleanHtml = DOMPurify.sanitize(rawHtml, {
+			ADD_ATTR: ['target','rel']
+		});
 
         // bubble.innerHTML = sanitizedHTML;
         // message.appendChild(bubble);
